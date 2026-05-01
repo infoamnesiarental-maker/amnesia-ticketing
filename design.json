@@ -1,0 +1,497 @@
+{
+    "metadata": {
+      "tipo_template": "Landing Page de Portfolio Creativo",
+      "estilo": "Moderno, Bold, Minimalista con gradientes vibrantes"
+    },
+    
+    "paleta_colores": {
+      "principal": {
+        "naranja_vibrante": "#FF5722",
+        "naranja_intenso": "#FF6B3D",
+        "rojo_oscuro": "#C62828",
+        "descripcion": "Gradiente de naranja a rojo oscuro que domina el hero"
+      },
+      "secundarios": {
+        "negro_profundo": "#0A0A0A",
+        "negro_carbon": "#1A1A1A",
+        "gris_oscuro": "#2D2D2D",
+        "descripcion": "Para secciones de contenido y contraste"
+      },
+      "acentos": {
+        "blanco_puro": "#FFFFFF",
+        "naranja_boton": "#FF5722",
+        "descripcion": "Para textos y CTAs"
+      },
+      "gradientes": {
+        "hero_background": "linear-gradient(135deg, #FF5722 0%, #C62828 50%, #1A1A1A 100%)",
+        "overlay_sutil": "linear-gradient(180deg, rgba(255,87,34,0.3) 0%, rgba(0,0,0,0.8) 100%)"
+      }
+    },
+  
+    "tipografia": {
+      "familia_principal": {
+        "nombre": "Sans-serif moderna (tipo Poppins o Montserrat)",
+        "peso_disponible": [400, 500, 600, 700, 800]
+      },
+      "jerarquia": {
+        "hero_title": {
+          "font_size": "clamp(64px, 8vw, 120px)",
+          "font_weight": 800,
+          "line_height": "1.1",
+          "letter_spacing": "-0.02em",
+          "color": "#FFFFFF",
+          "text_transform": "none"
+        },
+        "hero_subtitle": {
+          "font_size": "clamp(18px, 2vw, 24px)",
+          "font_weight": 400,
+          "line_height": "1.5",
+          "color": "#FFFFFF"
+        },
+        "heading_secundario": {
+          "font_size": "clamp(36px, 4vw, 56px)",
+          "font_weight": 700,
+          "line_height": "1.2",
+          "color": "#FFFFFF"
+        },
+        "body_text": {
+          "font_size": "16px",
+          "font_weight": 400,
+          "line_height": "1.6",
+          "color": "#FFFFFF"
+        },
+        "caption": {
+          "font_size": "14px",
+          "font_weight": 500,
+          "line_height": "1.4",
+          "color": "rgba(255,255,255,0.7)"
+        }
+      }
+    },
+  
+    "layout": {
+      "estructura_general": {
+        "tipo": "Single Page con secciones verticales",
+        "max_width": "1440px",
+        "padding_lateral": "clamp(24px, 5vw, 80px)",
+        "gap_entre_secciones": "120px"
+      },
+      
+      "grid_system": {
+        "columnas": 12,
+        "gap": "24px",
+        "breakpoints": {
+          "mobile": "0-768px",
+          "tablet": "768-1024px",
+          "desktop": "1024px+"
+        }
+      }
+    },
+  
+    "componentes": {
+      "header": {
+        "posicion": "fixed top",
+        "altura": "80px",
+        "padding": "20px 5vw",
+        "background": "transparent (con backdrop-blur al scroll)",
+        "backdrop_filter": "blur(10px)",
+        "estructura": {
+          "logo": {
+            "posicion": "left",
+            "font_size": "24px",
+            "font_weight": 600,
+            "color": "#FFFFFF"
+          },
+          "navegacion": {
+            "posicion": "center-right",
+            "cantidad_items": 3,
+            "font_size": "16px",
+            "font_weight": 500,
+            "gap": "40px",
+            "color": "#FFFFFF",
+            "hover_effect": "opacity: 0.7"
+          },
+          "cta_button": {
+            "posicion": "right",
+            "estilo": "ver seccion botones"
+          }
+        }
+      },
+  
+      "hero_section": {
+        "altura": "100vh",
+        "background": "Gradiente naranja a negro",
+        "display": "grid",
+        "grid_template_columns": "1fr 1fr",
+        "align_items": "center",
+        "padding": "0 5vw",
+        
+        "contenido_izquierda": {
+          "estructura": [
+            {
+              "elemento": "titulo_pequeño",
+              "font_size": "24px",
+              "margin_bottom": "20px"
+            },
+            {
+              "elemento": "titulo_principal",
+              "font_size": "120px",
+              "font_weight": 800,
+              "line_height": "1.1",
+              "color": "#FFFFFF",
+              "lineas": 2
+            },
+            {
+              "elemento": "grid_servicios",
+              "display": "grid",
+              "grid_template_columns": "repeat(2, 1fr)",
+              "gap": "40px",
+              "margin_top": "80px",
+              "cantidad_items": 4,
+              "estructura_item": {
+                "numero": {
+                  "formato": "#01, #02, #03, #04",
+                  "font_size": "14px",
+                  "color": "#FF5722"
+                },
+                "descripcion": {
+                  "font_size": "16px",
+                  "font_weight": 500,
+                  "color": "#FFFFFF"
+                }
+              }
+            }
+          ]
+        },
+        
+        "contenido_derecha": {
+          "imagen_principal": {
+            "tipo": "Silueta/retrato",
+            "estilo": "Recortada con iluminación dramática",
+            "integracion": "Fundida con gradiente del fondo",
+            "posicion": "center"
+          },
+          "quote_box": {
+            "posicion": "superior derecha",
+            "background": "rgba(0,0,0,0.3)",
+            "backdrop_filter": "blur(10px)",
+            "padding": "32px",
+            "border_radius": "20px",
+            "estructura": {
+              "titulo": {
+                "font_size": "24px",
+                "font_weight": 600,
+                "margin_bottom": "16px"
+              },
+              "descripcion": {
+                "font_size": "16px",
+                "line_height": "1.6"
+              }
+            }
+          }
+        }
+      },
+  
+      "brands_section": {
+        "background": "#0A0A0A",
+        "padding": "60px 5vw",
+        "estructura": {
+          "titulo_seccion": {
+            "font_size": "14px",
+            "color": "rgba(255,255,255,0.6)",
+            "margin_bottom": "40px"
+          },
+          "logos_container": {
+            "display": "flex",
+            "justify_content": "space-between",
+            "align_items": "center",
+            "gap": "60px",
+            "cantidad_logos": 4,
+            "estilo_logos": {
+              "color": "#FFFFFF",
+              "font_size": "24px",
+              "font_weight": 600,
+              "opacity": 0.8,
+              "hover_opacity": 1
+            }
+          }
+        }
+      },
+  
+      "about_section": {
+        "background": "#0A0A0A",
+        "padding": "120px 5vw",
+        "layout": "dos columnas",
+        
+        "columna_izquierda": {
+          "ancho": "50%",
+          "estructura": [
+            {
+              "elemento": "tag",
+              "color": "#FF5722",
+              "font_size": "14px",
+              "font_weight": 600,
+              "margin_bottom": "24px"
+            },
+            {
+              "elemento": "titulo_grande",
+              "font_size": "56px",
+              "font_weight": 700,
+              "line_height": "1.2",
+              "color": "#FFFFFF"
+            }
+          ]
+        },
+        
+        "columna_derecha": {
+          "ancho": "40%",
+          "align_self": "center",
+          "estructura": [
+            {
+              "elemento": "descripcion_grande",
+              "font_size": "24px",
+              "line_height": "1.5",
+              "color": "#FFFFFF",
+              "margin_bottom": "32px"
+            },
+            {
+              "elemento": "bullet_points",
+              "cantidad": 2,
+              "font_size": "16px"
+            },
+            {
+              "elemento": "cta_button",
+              "margin_top": "24px"
+            }
+          ]
+        },
+        
+        "galeria_imagenes": {
+          "margin_top": "80px",
+          "display": "grid",
+          "grid_template_columns": "repeat(3, 1fr)",
+          "gap": "24px",
+          "configuracion_imagenes": {
+            "cantidad": 3,
+            "aspect_ratio": "3:4",
+            "border_radius": "20px",
+            "filter": "grayscale(100%)",
+            "hover_filter": "grayscale(0%)",
+            "hover_transform": "scale(1.05)"
+          }
+        }
+      },
+  
+      "botones": {
+        "cta_principal": {
+          "background": "#FFFFFF",
+          "color": "#000000",
+          "padding": "14px 32px",
+          "border_radius": "50px",
+          "font_size": "16px",
+          "font_weight": 600,
+          "display": "inline-flex",
+          "align_items": "center",
+          "gap": "12px",
+          "transition": "all 0.3s ease",
+          "hover": {
+            "background": "#FF5722",
+            "color": "#FFFFFF",
+            "transform": "translateY(-2px)",
+            "box_shadow": "0 10px 30px rgba(255,87,34,0.3)"
+          },
+          "icono": {
+            "tipo": "Arrow/flecha derecha",
+            "size": "20px",
+            "posicion": "derecha"
+          }
+        }
+      },
+  
+      "tarjetas": {
+        "card_servicio": {
+          "background": "transparent",
+          "padding": "0",
+          "border": "none",
+          "estructura": {
+            "numero": {
+              "color": "#FF5722",
+              "font_size": "14px",
+              "font_weight": 600,
+              "margin_bottom": "8px"
+            },
+            "titulo": {
+              "color": "#FFFFFF",
+              "font_size": "16px",
+              "font_weight": 500
+            }
+          }
+        },
+        
+        "card_imagen": {
+          "border_radius": "20px",
+          "overflow": "hidden",
+          "aspect_ratio": "3:4",
+          "filter": "grayscale(100%)",
+          "transition": "all 0.4s ease",
+          "hover": {
+            "filter": "grayscale(0%)",
+            "transform": "scale(1.05)"
+          }
+        }
+      }
+    },
+  
+    "efectos_visuales": {
+      "gradientes": {
+        "hero_principal": "linear-gradient(135deg, #FF5722 0%, #C62828 50%, #0A0A0A 100%)",
+        "overlay_imagenes": "linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.6) 100%)"
+      },
+      
+      "blur_effects": {
+        "glassmorphism": {
+          "background": "rgba(255,255,255,0.1)",
+          "backdrop_filter": "blur(10px)",
+          "border": "1px solid rgba(255,255,255,0.2)"
+        },
+        "header_scroll": {
+          "backdrop_filter": "blur(10px)",
+          "background": "rgba(10,10,10,0.8)"
+        }
+      },
+      
+      "sombras": {
+        "card_hover": "0 20px 60px rgba(0,0,0,0.4)",
+        "button_hover": "0 10px 30px rgba(255,87,34,0.3)",
+        "elevation_soft": "0 4px 20px rgba(0,0,0,0.2)"
+      },
+      
+      "transiciones": {
+        "standard": "all 0.3s ease",
+        "smooth": "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+        "bounce": "all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55)"
+      },
+      
+      "animaciones": {
+        "fade_in": {
+          "from": "opacity: 0, transform: translateY(30px)",
+          "to": "opacity: 1, transform: translateY(0)",
+          "duration": "0.6s",
+          "easing": "ease-out"
+        },
+        "scale_hover": {
+          "transform": "scale(1.05)",
+          "duration": "0.3s"
+        }
+      }
+    },
+  
+    "espaciado": {
+      "sistema": {
+        "base": "8px",
+        "escala": [4, 8, 12, 16, 24, 32, 40, 48, 64, 80, 120, 160],
+        "uso": {
+          "xs": "8px",
+          "sm": "16px",
+          "md": "24px",
+          "lg": "32px",
+          "xl": "48px",
+          "2xl": "64px",
+          "3xl": "80px",
+          "4xl": "120px"
+        }
+      },
+      "padding_secciones": {
+        "vertical": "120px",
+        "horizontal": "5vw"
+      },
+      "gap_elementos": {
+        "pequeño": "8px",
+        "medio": "24px",
+        "grande": "40px",
+        "extra_grande": "80px"
+      }
+    },
+  
+    "responsividad": {
+      "breakpoints": {
+        "mobile": {
+          "max_width": "768px",
+          "cambios": {
+            "hero_grid": "1 columna",
+            "font_size_hero": "48px",
+            "padding": "24px",
+            "servicios_grid": "1 columna",
+            "galeria": "1 columna"
+          }
+        },
+        "tablet": {
+          "min_width": "769px",
+          "max_width": "1024px",
+          "cambios": {
+            "hero_grid": "1 columna centrada",
+            "font_size_hero": "72px",
+            "galeria": "2 columnas"
+          }
+        },
+        "desktop": {
+          "min_width": "1025px",
+          "layout": "Diseño completo 2 columnas"
+        }
+      }
+    },
+  
+    "microinteracciones": {
+      "hover_links": {
+        "efecto": "opacity: 0.7",
+        "transition": "0.2s ease"
+      },
+      "hover_buttons": {
+        "efecto": "transform: translateY(-2px), box-shadow aumentada",
+        "transition": "0.3s ease"
+      },
+      "hover_imagenes": {
+        "efecto": "filter de grayscale(100%) a grayscale(0%), scale(1.05)",
+        "transition": "0.4s ease"
+      },
+      "scroll_animations": {
+        "tipo": "fade-in desde abajo",
+        "trigger": "cuando elemento entra 20% del viewport",
+        "stagger": "0.1s entre elementos"
+      }
+    },
+  
+    "accesibilidad": {
+      "contraste": {
+        "texto_sobre_oscuro": "ratio mínimo 7:1",
+        "botones": "ratio mínimo 4.5:1"
+      },
+      "focus_states": {
+        "outline": "2px solid #FF5722",
+        "outline_offset": "4px"
+      },
+      "alt_texts": "Requerido para todas las imágenes",
+      "aria_labels": "Requerido para navegación y botones"
+    },
+  
+    "assets_requeridos": {
+      "imagenes": {
+        "hero_principal": {
+          "tipo": "Retrato/silueta",
+          "formato": "PNG con transparencia o JPG",
+          "resolución": "1200x1600px",
+          "optimización": "WebP para web"
+        },
+        "galeria": {
+          "cantidad": 3,
+          "formato": "JPG optimizado",
+          "resolución": "800x1067px",
+          "aspect_ratio": "3:4"
+        }
+      },
+      "iconos": {
+        "arrow": "20x20px, SVG",
+        "menu_mobile": "24x24px, SVG"
+      }
+    }
+}

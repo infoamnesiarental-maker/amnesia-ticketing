@@ -1,0 +1,262 @@
+@import "tailwindcss";
+
+/* AmnesiaTicketing — tokens desde design.json */
+:root {
+  --brand-orange: #ff5722;
+  --brand-orange-intense: #ff6b3d;
+  --brand-red: #c62828;
+  --surface-black: #0a0a0a;
+  --surface-carbon: #1a1a1a;
+  --surface-gray: #2d2d2d;
+  --text-primary: #ffffff;
+  --text-muted: rgba(255, 255, 255, 0.7);
+  --gradient-hero: linear-gradient(135deg, #ff5722 0%, #c62828 50%, #1a1a1a 100%);
+  --gradient-hero-alt: linear-gradient(135deg, #ff5722 0%, #c62828 50%, #0a0a0a 100%);
+  --gradient-overlay: linear-gradient(180deg, rgba(255, 87, 34, 0.3) 0%, rgba(0, 0, 0, 0.8) 100%);
+  --glass-bg: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --header-scroll-bg: rgba(10, 10, 10, 0.8);
+  --shadow-button-hover: 0 10px 30px rgba(255, 87, 34, 0.3);
+  --shadow-card-hover: 0 20px 60px rgba(0, 0, 0, 0.4);
+  --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.2);
+  --radius-card: 20px;
+  --radius-pill: 50px;
+  --pad-section-x: clamp(24px, 5vw, 80px);
+  --pad-section-y: 120px;
+  --max-content: 1440px;
+  --transition-standard: all 0.3s ease;
+  --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@theme inline {
+  --color-background: var(--surface-black);
+  --color-foreground: var(--text-primary);
+  --color-muted: var(--text-muted);
+  --color-brand: var(--brand-orange);
+  --color-brand-intense: var(--brand-orange-intense);
+  --color-brand-red: var(--brand-red);
+  --color-surface-carbon: var(--surface-carbon);
+  --color-surface-gray: var(--surface-gray);
+  --color-card: var(--surface-carbon);
+  --color-destructive: #f87171;
+  --color-accent: var(--surface-gray);
+  --color-accent-foreground: var(--text-primary);
+  --color-ring: var(--brand-orange);
+  --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+  --radius-xl: var(--radius-card);
+  --radius-2xl: var(--radius-card);
+  --shadow-button-hover: var(--shadow-button-hover);
+  --shadow-card-hover: var(--shadow-card-hover);
+}
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    border-color: rgba(255, 255, 255, 0.12);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background: var(--surface-black);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--brand-orange);
+    outline-offset: 4px;
+  }
+
+  ::selection {
+    background: rgba(255, 87, 34, 0.35);
+    color: #fff;
+  }
+}
+
+@layer utilities {
+  .bg-hero-gradient {
+    background: var(--gradient-hero-alt);
+  }
+
+  .bg-hero-gradient-soft {
+    background: var(--gradient-hero);
+  }
+
+  .surface-glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-card);
+  }
+
+  .surface-quote {
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: var(--radius-card);
+    padding: clamp(1.25rem, 3vw, 2rem);
+  }
+
+  /* Hero legible (design.json como referencia, sin “cartel” que rompe el viewport) */
+  .text-hero-title {
+    font-size: clamp(1.875rem, 2.8vw + 0.75rem, 3.25rem);
+    font-weight: 800;
+    line-height: 1.12;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+  }
+
+  @media (min-width: 1024px) {
+    .text-hero-title {
+      font-size: clamp(2.25rem, 2.2vw + 1.25rem, 3.75rem);
+    }
+  }
+
+  .text-hero-subtitle {
+    font-size: clamp(1rem, 0.6vw + 0.9rem, 1.25rem);
+    font-weight: 400;
+    line-height: 1.5;
+    color: var(--text-primary);
+  }
+
+  .text-heading-secondary {
+    font-size: clamp(1.5rem, 1.8vw + 0.85rem, 2.5rem);
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--text-primary);
+  }
+
+  .text-caption-design {
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.4;
+    color: var(--text-muted);
+  }
+
+  .btn-cta-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 14px 32px;
+    border-radius: var(--radius-pill);
+    font-size: 16px;
+    font-weight: 600;
+    background: #ffffff;
+    color: #000000;
+    transition: var(--transition-standard);
+    box-shadow: var(--shadow-soft);
+  }
+
+  .btn-cta-primary:hover {
+    background: var(--brand-orange);
+    color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-button-hover);
+  }
+
+  .btn-cta-primary:disabled {
+    opacity: 0.55;
+    transform: none;
+    cursor: not-allowed;
+  }
+
+  .btn-ghost-nav {
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: #ffffff;
+    padding: 8px 0;
+    transition: opacity 0.2s ease;
+  }
+
+  .btn-ghost-nav:hover {
+    opacity: 0.7;
+  }
+
+  .btn-outline-light {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 28px;
+    border-radius: var(--radius-pill);
+    font-size: 16px;
+    font-weight: 600;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    color: #ffffff;
+    transition: var(--transition-standard);
+  }
+
+  .btn-outline-light:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.55);
+  }
+
+  .input-design {
+    height: 44px;
+    width: 100%;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(0, 0, 0, 0.35);
+    color: #fff;
+    padding: 0 14px;
+    font-size: 15px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .input-design::placeholder {
+    color: rgba(255, 255, 255, 0.45);
+  }
+
+  .input-design:focus {
+    outline: none;
+    border-color: var(--brand-orange);
+    box-shadow: 0 0 0 3px rgba(255, 87, 34, 0.25);
+  }
+
+  .card-service-num {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--brand-orange);
+    margin-bottom: 8px;
+  }
+
+  .card-service-title {
+    font-size: 16px;
+    font-weight: 500;
+    color: #ffffff;
+  }
+
+  .section-padding-x {
+    padding-left: var(--pad-section-x);
+    padding-right: var(--pad-section-x);
+  }
+
+  .max-w-content {
+    max-width: var(--max-content);
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .animate-fade-up {
+    animation: fade-up 0.6s ease-out both;
+  }
+
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}

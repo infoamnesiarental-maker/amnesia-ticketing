@@ -1,0 +1,4 @@
+# Si más adelante inicializás Git en la raíz del monorepo, no subas secretos:
+.env
+.env.local
+.env*.local
