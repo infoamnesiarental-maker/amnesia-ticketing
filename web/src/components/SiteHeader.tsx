@@ -60,11 +60,9 @@ export function SiteHeader({ variant = "hero", minimal = false }: SiteHeaderProp
           className="flex min-w-0 items-center gap-2 text-white sm:gap-3"
           aria-label="Inicio Amnesia Ticketing"
         >
-          {variant === "hero" ? null : (
-            <span className="relative h-9 w-9 shrink-0 overflow-hidden rounded-xl bg-black/20 shadow-lg sm:h-10 sm:w-10">
-              <Image src="/logoAmnesia.png" alt="" fill sizes="40px" className="object-contain p-1.5" priority />
-            </span>
-          )}
+          <span className="relative h-9 w-9 shrink-0 overflow-hidden rounded-xl bg-black/20 shadow-lg sm:h-10 sm:w-10">
+            <Image src="/logoAmnesia.png" alt="" fill sizes="40px" className="object-contain p-1.5" priority />
+          </span>
           <span className="truncate text-base font-semibold leading-tight tracking-tight sm:text-lg md:text-xl">
             Amnesia Ticketing
           </span>
