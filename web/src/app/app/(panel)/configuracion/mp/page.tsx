@@ -55,8 +55,8 @@ export default async function MpConfiguracionPage() {
   }
 
   return (
-    <div className="max-w-2xl">
-      <div className="flex items-center gap-3 text-xs text-white/55">
+    <div className="mx-auto w-full max-w-2xl text-center md:mx-0 md:text-left">
+      <div className="flex flex-wrap items-center justify-center gap-3 text-xs text-white/55 md:justify-start">
         <Link href="/app" className="hover:text-white">
           Panel
         </Link>

@@ -160,10 +160,10 @@ export function OrderDetailPanel({ detail, onAfterAction }: OrderDetailPanelProp
     : "";
 
   return (
-    <div className="grid gap-4">
-      <header className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <div className="flex flex-wrap items-center gap-2">
+    <div className="grid w-full gap-4">
+      <header className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
+        <div className="min-w-0 text-center sm:text-left">
+          <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-start">
             <span className={`rounded-full border px-2 py-0.5 text-xs ${badge.cls}`}>{badge.label}</span>
             <span className="font-mono text-[10px] text-white/40">#{detail.id.slice(0, 8)}</span>
             <span className="text-xs text-white/55">{relativeTime(detail.created_at)}</span>
@@ -180,13 +180,13 @@ export function OrderDetailPanel({ detail, onAfterAction }: OrderDetailPanelProp
         <Link
           href={`/o/${detail.id}`}
           target="_blank"
-          className="rounded-lg border border-white/15 px-3 py-1.5 text-xs text-white/70 hover:bg-white/5"
+          className="shrink-0 self-center rounded-lg border border-white/15 px-3 py-1.5 text-xs text-white/70 hover:bg-white/5 sm:self-start"
         >
           Vista comprador ↗
         </Link>
       </header>
 
-      <section className="surface-glass grid gap-4 p-5 sm:grid-cols-[1fr_auto] sm:items-center">
+      <section className="surface-glass grid gap-4 p-5 text-center sm:grid-cols-[1fr_auto] sm:items-center sm:text-left">
         <div>
           <p className="text-xs uppercase tracking-wider text-white/55">Monto a verificar</p>
           <p className="mt-1 text-4xl font-bold text-white tabular-nums">
@@ -196,7 +196,7 @@ export function OrderDetailPanel({ detail, onAfterAction }: OrderDetailPanelProp
             {detail.total_qty} entrada{detail.total_qty > 1 ? "s" : ""} · creada {formatDate(detail.created_at)}
           </p>
         </div>
-        <div className="flex flex-wrap gap-2 sm:flex-col sm:items-end">
+        <div className="flex flex-wrap justify-center gap-2 sm:flex-col sm:items-end sm:justify-start">
           <CopyButton value={String(Number(detail.total_ars))} label="Copiar monto" size="md" />
           <CopyButton
             value={`${detail.buyer_first_name} ${detail.buyer_last_name}`}

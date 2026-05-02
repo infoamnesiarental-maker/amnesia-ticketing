@@ -34,7 +34,7 @@ export default async function EventosPage() {
 
   if (error) {
     return (
-      <div className="rounded-xl border border-red-400/40 bg-red-500/10 p-4 text-sm text-red-200">
+      <div className="mx-auto max-w-2xl rounded-xl border border-red-400/40 bg-red-500/10 p-4 text-center text-sm text-red-200 md:text-left">
         No se pudieron cargar eventos. ¿Ejecutaste <code className="text-white">supabase/policies-mvp.sql</code> y{" "}
         <code className="text-white">schema.sql</code>? {error.message}
       </div>
@@ -42,10 +42,10 @@ export default async function EventosPage() {
   }
 
   return (
-    <div>
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+    <div className="mx-auto w-full max-w-4xl md:max-w-none">
+      <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:items-center sm:justify-between sm:text-left">
         <h1 className="text-2xl font-bold text-white">Eventos</h1>
-        <Link href="/app/eventos/nuevo" className="btn-cta-primary w-fit justify-center">
+        <Link href="/app/eventos/nuevo" className="btn-cta-primary w-full justify-center sm:w-fit">
           Nuevo evento
         </Link>
       </div>
@@ -56,18 +56,18 @@ export default async function EventosPage() {
           (events ?? []).map((e) => (
             <li
               key={e.id as string}
-              className="surface-glass flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between"
+              className="surface-glass flex flex-col items-center gap-3 p-4 text-center sm:flex-row sm:items-center sm:justify-between sm:text-left"
             >
-              <div>
+              <div className="min-w-0 sm:flex-1">
                 <p className="font-semibold text-white">{e.name as string}</p>
                 <p className="text-xs text-white/55">
                   slug: <span className="font-mono">{e.slug as string}</span>
                   {e.place ? ` · ${e.place as string}` : ""}
                 </p>
               </div>
-              <div className="flex flex-col items-start gap-2 sm:items-end">
+              <div className="flex w-full flex-col items-center gap-2 sm:w-auto sm:items-end">
                 <p className="text-xs text-white/50">MP: {(e.mp_alias as string) || "—"}</p>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap justify-center gap-2 sm:justify-end">
                   <Link
                     href={`/app/eventos/${String(e.id)}/editar`}
                     className="rounded-lg border border-white/20 px-3 py-1.5 text-xs text-white/90 hover:bg-white/5"
@@ -97,11 +97,6 @@ export default async function EventosPage() {
                     </Link>
                   ) : null}
                 </div>
-                {orgSlug ? (
-                  <p className="max-w-xs text-[10px] leading-snug text-white/40">
-                    URL: /e/{orgSlug}/{String(e.slug)}
-                  </p>
-                ) : null}
               </div>
             </li>
           ))

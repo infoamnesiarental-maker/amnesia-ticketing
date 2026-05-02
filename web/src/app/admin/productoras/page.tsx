@@ -70,29 +70,34 @@ export default async function AdminProductorasPage() {
   }
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold text-white">Productoras</h1>
-      <p className="mt-2 text-sm text-white/65">
-        Podés aprobar, rechazar o suspender. La ticketera pública solo funciona si está <span className="text-white">approved</span>.
-      </p>
-      <p className="mt-2 text-xs text-white/45">
+    <div className="mx-auto w-full max-w-4xl md:mx-0">
+      <div className="text-center md:text-left">
+        <h1 className="text-2xl font-bold text-white">Productoras</h1>
+        <p className="mt-2 text-sm text-white/65">
+          Podés aprobar, rechazar o suspender. La ticketera pública solo funciona si está <span className="text-white">approved</span>.
+        </p>
+        <p className="mt-2 text-xs text-white/45">
         Actividad reciente: {String((requests ?? []).length)} login(s)/solicitud(es) registradas (tabla{" "}
         <code className="text-white">org_access_requests</code>).
-      </p>
+        </p>
+      </div>
       <ul className="mt-8 space-y-2">
         {(orgs ?? []).length === 0 ? (
           <li className="text-sm text-white/55">No hay organizaciones todavía.</li>
         ) : (
           (orgs ?? []).map((o) => (
-            <li key={o.id as string} className="surface-glass flex flex-wrap items-center justify-between gap-2 p-4">
-              <div>
+            <li
+              key={o.id as string}
+              className="surface-glass flex flex-col items-center gap-3 p-4 text-center sm:flex-row sm:items-center sm:justify-between sm:text-left"
+            >
+              <div className="min-w-0">
                 <p className="font-medium text-white">{o.name as string}</p>
                 <p className="text-xs text-white/55">
                   <span className="font-mono">{o.slug as string}</span> · {String(o.contact_email)} ·{" "}
                   <StatusPill status={String(o.status)} />
                 </p>
               </div>
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="flex flex-wrap justify-center gap-2 sm:justify-end">
                 <form action={setOrgStatus}>
                   <input type="hidden" name="org_id" value={String(o.id)} />
                   <input type="hidden" name="status" value="approved" />

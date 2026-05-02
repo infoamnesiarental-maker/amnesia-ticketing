@@ -59,16 +59,16 @@ export function TicketTypeForm({
   }
 
   return (
-    <div>
+    <div className={hideChrome ? undefined : "mx-auto w-full max-w-lg"}>
       {hideChrome ? null : (
         <>
-          <Link href={backHref} className="text-sm text-white/60 hover:text-white">
+          <Link href={backHref} className="inline-flex text-sm text-white/60 hover:text-white">
             ← Tipos de entrada
           </Link>
           <h1 className="mt-4 text-2xl font-bold text-white">{title}</h1>
         </>
       )}
-      <form onSubmit={onSubmit} className={`surface-glass grid max-w-lg gap-4 p-6 ${hideChrome ? "mt-0" : "mt-8"}`}>
+      <form onSubmit={onSubmit} className={`surface-glass grid w-full gap-4 p-6 ${hideChrome ? "mt-0" : "mt-8"}`}>
         <input type="hidden" name="event_id" value={eventId} />
         {mode === "edit" && initial ? <input type="hidden" name="ticket_type_id" value={initial.id} /> : null}
         {error ? (

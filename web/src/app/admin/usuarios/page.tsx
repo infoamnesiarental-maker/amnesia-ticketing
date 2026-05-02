@@ -36,9 +36,11 @@ export default async function AdminUsuariosPage() {
   const users = data?.users ?? [];
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold text-white">Usuarios</h1>
-      <p className="mt-2 text-sm text-white/65">Alta/edición avanzada: siguiente. Por ahora: listar y eliminar.</p>
+    <div className="mx-auto w-full max-w-4xl md:mx-0">
+      <div className="text-center md:text-left">
+        <h1 className="text-2xl font-bold text-white">Usuarios</h1>
+        <p className="mt-2 text-sm text-white/65">Alta/edición avanzada: siguiente. Por ahora: listar y eliminar.</p>
+      </div>
 
       <ul className="mt-8 space-y-2">
         {users.length === 0 ? (
@@ -47,7 +49,7 @@ export default async function AdminUsuariosPage() {
           users.map((u) => (
             <li
               key={u.id}
-              className="surface-glass flex flex-wrap items-center justify-between gap-3 p-4"
+              className="surface-glass flex flex-col items-center gap-3 p-4 text-center sm:flex-row sm:items-center sm:justify-between sm:text-left"
             >
               <div className="min-w-0">
                 <p className="font-medium text-white">{u.email ?? "—"}</p>

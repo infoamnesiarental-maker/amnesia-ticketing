@@ -147,8 +147,8 @@ export default async function AdminInvitadosPage({ params, searchParams }: PageP
   const eventSlug = evRow.slug;
 
   return (
-    <div>
-      <div className="flex items-center gap-3 text-xs text-white/55">
+    <div className="mx-auto w-full max-w-6xl md:mx-0">
+      <div className="flex flex-wrap items-center justify-center gap-3 text-xs text-white/55 md:justify-start">
         <Link href="/app/eventos" className="hover:text-white">
           Eventos
         </Link>
@@ -160,44 +160,34 @@ export default async function AdminInvitadosPage({ params, searchParams }: PageP
         <span>Invitados</span>
       </div>
 
-      <div className="mt-3 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
-        <div>
+      <div className="mt-3 flex flex-col items-center gap-3 text-center sm:flex-row sm:items-end sm:justify-between sm:text-left">
+        <div className="min-w-0">
           <h1 className="text-2xl font-bold text-white">Invitados · {eventName}</h1>
-          <p className="mt-1 text-sm text-white/65">
-            Lista completa con datos privados. La pública (sin email/teléfono y DNI enmascarado) está en{" "}
-            <Link
-              href={`/e/${orgSlug}/${eventSlug}/invitados`}
-              className="text-white/80 underline-offset-2 hover:underline"
-              target="_blank"
-            >
-              /e/{orgSlug}/{eventSlug}/invitados
-            </Link>
-            .
-          </p>
+          <p className="mt-1 text-sm text-white/65">Lista privada de invitados con DNI completo para control de acceso.</p>
         </div>
         <ExportCsvButton rows={allRows} eventName={eventName} />
       </div>
 
       {/* KPIs */}
       <section className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="surface-glass p-5">
+        <div className="surface-glass p-5 text-center sm:text-left">
           <p className="text-xs uppercase tracking-wider text-white/55">Confirmados</p>
           <p className="mt-1 text-3xl font-bold text-emerald-200 tabular-nums">{validatedGuests}</p>
           <p className="mt-1 text-[11px] text-white/50">de {validatedBuyers} compradores</p>
         </div>
-        <div className="surface-glass p-5">
+        <div className="surface-glass p-5 text-center sm:text-left">
           <p className="text-xs uppercase tracking-wider text-white/55">Recaudado</p>
           <p className="mt-1 text-3xl font-bold text-emerald-200 tabular-nums">
             {money.format(validatedRevenue)}
           </p>
           <p className="mt-1 text-[11px] text-white/50">de las órdenes confirmadas</p>
         </div>
-        <div className="surface-glass p-5">
+        <div className="surface-glass p-5 text-center sm:text-left">
           <p className="text-xs uppercase tracking-wider text-white/55">Pendientes</p>
           <p className="mt-1 text-3xl font-bold text-amber-200 tabular-nums">{pendingGuests}</p>
           <p className="mt-1 text-[11px] text-white/50">de {pendingBuyers} compradores</p>
         </div>
-        <div className="surface-glass p-5">
+        <div className="surface-glass p-5 text-center sm:text-left">
           <p className="text-xs uppercase tracking-wider text-white/55">Esperado</p>
           <p className="mt-1 text-3xl font-bold text-white tabular-nums">
             {money.format(expectedRevenue)}
@@ -207,8 +197,8 @@ export default async function AdminInvitadosPage({ params, searchParams }: PageP
       </section>
 
       {/* Filtros */}
-      <div className="mt-6 grid gap-3 sm:grid-cols-[auto_1fr]">
-        <nav className="flex flex-wrap gap-2">
+      <div className="mt-6 flex flex-col gap-3 sm:grid sm:grid-cols-[auto_1fr]">
+        <nav className="flex flex-wrap justify-center gap-2 sm:justify-start">
           {STATUS_FILTERS.map((s) => {
             const active = s.key === statusFilter;
             const count =
@@ -244,7 +234,7 @@ export default async function AdminInvitadosPage({ params, searchParams }: PageP
         </form>
       </div>
 
-      <p className="mt-4 text-xs text-white/55">
+      <p className="mt-4 text-center text-xs text-white/55 sm:text-left">
         Mostrando <span className="text-white">{filtered.length}</span> de {totalAttendees} asistentes.
       </p>
 
@@ -307,16 +297,9 @@ export default async function AdminInvitadosPage({ params, searchParams }: PageP
         )}
       </section>
 
-      <div className="mt-4 flex flex-wrap items-center gap-2 text-xs text-white/55">
+      <div className="mt-4 flex flex-wrap items-center justify-center gap-2 text-xs text-white/55 sm:justify-start">
         <Link href={`/app/ventas?event=${eventId}`} className="rounded-lg border border-white/15 px-3 py-1.5 hover:bg-white/5">
           Ir a validar pagos →
-        </Link>
-        <Link
-          href={`/e/${orgSlug}/${eventSlug}/invitados`}
-          className="rounded-lg border border-white/15 px-3 py-1.5 hover:bg-white/5"
-          target="_blank"
-        >
-          Ver lista pública (DNI enmascarado) ↗
         </Link>
       </div>
     </div>

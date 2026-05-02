@@ -71,9 +71,9 @@ export default async function PublicTicketeraPage(props: {
   return (
     <div className="min-h-screen bg-[#0A0A0A]">
       <SiteHeader variant="solid" />
-      <main className="section-padding-x mx-auto max-w-content pb-24 pt-28">
+      <main className="section-padding-x mx-auto max-w-content pb-24 pt-24 sm:pt-28">
         {hasPurchaseFlow ? (
-          <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,320px)_minmax(0,1fr)] lg:gap-10 xl:grid-cols-[minmax(0,380px)_minmax(0,1fr)]">
+          <div className="grid items-start justify-items-center gap-8 lg:grid-cols-[minmax(0,320px)_minmax(0,1fr)] lg:justify-items-stretch lg:gap-10 xl:grid-cols-[minmax(0,380px)_minmax(0,1fr)]">
             <PublicTicketeraFlyer context={ctx} />
             <div className="min-w-0 space-y-8">
               <header className="hidden border-b border-white/10 pb-5 lg:block">
@@ -82,7 +82,7 @@ export default async function PublicTicketeraPage(props: {
                   {ctx.organization.name} · <span className="font-mono text-white/45">{ctx.organization.slug}</span>
                 </p>
               </header>
-              <div className="border-b border-white/10 pb-6 lg:hidden">
+              <div className="border-b border-white/10 pb-6 text-center lg:hidden lg:text-left">
                 <p className="text-xs font-semibold uppercase tracking-wider text-brand">Ticketera</p>
                 <h2 className="mt-2 text-lg font-semibold text-white">Completá tu compra</h2>
                 <p className="mt-1 text-sm text-white/60">{ctx.organization.name}</p>
@@ -99,12 +99,6 @@ export default async function PublicTicketeraPage(props: {
           </>
         )}
         <div className="mt-12 flex flex-col items-center gap-3 text-center text-xs text-white/40">
-          <Link
-            href={`/e/${encodeURIComponent(orgSlug)}/${encodeURIComponent(eventSlug)}/invitados`}
-            className="rounded-full border border-white/15 px-4 py-2 text-white/70 transition hover:border-white/30 hover:text-white"
-          >
-            Ver lista de invitados
-          </Link>
           <p>Al comprar aceptás que procesemos tus datos para validar el pago y emitir entradas.</p>
         </div>
       </main>

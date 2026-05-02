@@ -22,10 +22,10 @@ export default async function OnboardingPage() {
   return (
     <div className="min-h-screen bg-[#0A0A0A]">
       <SiteHeader variant="solid" />
-      <main className="section-padding-x mx-auto max-w-lg pb-20 pt-28">
+      <main className="section-padding-x mx-auto max-w-lg pb-20 pt-24 text-center sm:pt-28 md:text-left">
         <p className="text-sm font-semibold text-brand">Primer paso</p>
         <h1 className="mt-2 text-2xl font-bold text-white">Creá tu productora</h1>
-        <p className="mt-2 text-sm text-white/70">
+        <p className="mx-auto mt-2 max-w-md text-sm text-white/70 md:mx-0">
           Así podés crear eventos y usar el panel. El slug se usa en URLs (solo letras, números y guiones).
         </p>
 

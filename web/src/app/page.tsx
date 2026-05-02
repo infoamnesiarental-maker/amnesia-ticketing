@@ -152,12 +152,12 @@ export default async function Home() {
       <footer className="border-t border-white/10 bg-[#0A0A0A] py-10 section-padding-x">
         <div className="max-w-content mx-auto flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <div className="text-caption-design">
-            <p className="text-sm font-semibold text-white">AmnesiaTicketing</p>
+            <p className="text-sm font-semibold text-white">Amnesia Ticketing</p>
             <p className="mt-1 text-xs text-white/55">Ticketera sin comisión para productoras y eventos.</p>
           </div>
           <div className="text-xs text-white/55">
             <p>Contacto: WhatsApp +54 911 3953 1218</p>
-            <p className="mt-1">© {new Date().getFullYear()} AmnesiaTicketing. Todos los derechos reservados.</p>
+            <p className="mt-1">© {new Date().getFullYear()} Amnesia Ticketing. Todos los derechos reservados.</p>
           </div>
         </div>
       </footer>

@@ -49,19 +49,21 @@ export default async function EntradasListPage({ params }: { params: Promise<{ e
   const base = `/app/eventos/${eventId}/entradas`;
 
   return (
-    <div>
-      <Link href="/app/eventos" className="text-sm text-white/60 hover:text-white">
-        ← Eventos
-      </Link>
-      <div className="mt-4 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-        <div>
+    <div className="mx-auto w-full max-w-4xl md:mx-0">
+      <div className="text-center sm:text-left">
+        <Link href="/app/eventos" className="inline-block text-sm text-white/60 hover:text-white">
+          ← Eventos
+        </Link>
+      </div>
+      <div className="mt-4 flex flex-col items-center gap-4 text-center sm:flex-row sm:items-center sm:justify-between sm:text-left">
+        <div className="min-w-0">
           <h1 className="text-2xl font-bold text-white">Tipos de entrada</h1>
           <p className="mt-1 text-sm text-white/65">
             Evento: <span className="text-white">{eventName}</span>{" "}
             <span className="font-mono text-white/50">({String(event.slug)})</span>
           </p>
         </div>
-        <Link href={`${base}/nuevo`} className="btn-cta-primary w-fit justify-center">
+        <Link href={`${base}/nuevo`} className="btn-cta-primary w-full justify-center sm:w-fit">
           Nuevo tipo
         </Link>
       </div>
@@ -75,10 +77,10 @@ export default async function EntradasListPage({ params }: { params: Promise<{ e
           (types ?? []).map((t) => (
             <li
               key={t.id as string}
-              className="surface-glass flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between"
+              className="surface-glass flex flex-col items-center gap-3 p-4 text-center sm:flex-row sm:items-center sm:justify-between sm:text-left"
             >
               <div className="min-w-0 flex-1">
-                <div className="flex flex-wrap items-center gap-2">
+                <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-start">
                   <p className="font-semibold text-white">{t.name as string}</p>
                   {(t.is_active as boolean) ? (
                     <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-xs text-emerald-200">Activo</span>
@@ -94,7 +96,7 @@ export default async function EntradasListPage({ params }: { params: Promise<{ e
                   {money.format(Number(t.price_ars))} · stock {String(t.stock_total)}
                 </p>
               </div>
-              <div className="flex shrink-0 flex-wrap gap-2">
+              <div className="flex shrink-0 flex-wrap justify-center gap-2 sm:justify-end">
                 <Link
                   href={`${base}/${String(t.id)}/editar`}
                   className="rounded-lg border border-white/20 px-3 py-1.5 text-xs text-white/90 hover:bg-white/5"

@@ -11,7 +11,7 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "AmnesiaTicketing",
+  title: "Amnesia Ticketing",
   description: "Ticketera sin pasarela: transferencia + comprobante + validación MP + QR.",
 };
 

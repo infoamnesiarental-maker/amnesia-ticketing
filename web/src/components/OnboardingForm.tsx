@@ -26,17 +26,16 @@ export function OnboardingForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="surface-glass mt-8 grid gap-4 p-6">
+    <form onSubmit={onSubmit} className="surface-glass mt-8 grid gap-4 p-6 text-left">
       {error ? (
         <div className="rounded-xl border border-red-400/40 bg-red-500/10 px-3 py-2 text-sm text-red-200">{error}</div>
       ) : null}
       <label className="grid gap-2 text-sm text-white/90">
         Nombre de la productora
         <input className="input-design" name="name" required placeholder="Ej: Amnesia Producciones" disabled={pending} />
-      </label>
-      <label className="grid gap-2 text-sm text-white/90">
-        Slug (opcional)
-        <input className="input-design" name="slug" placeholder="ej: amnesia" disabled={pending} />
+        <span className="text-xs font-normal text-white/45">
+          La ruta pública de tus eventos (el “slug”) se genera sola a partir del nombre, para evitar errores y enlaces rotos.
+        </span>
       </label>
       <button className="btn-cta-primary mt-2 w-full justify-center" type="submit" disabled={pending}>
         {pending ? "Creando…" : "Crear y continuar"}

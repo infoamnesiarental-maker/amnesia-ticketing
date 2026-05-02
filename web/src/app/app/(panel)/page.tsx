@@ -32,9 +32,11 @@ export default async function PanelHomePage() {
     : { count: 0 };
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold text-white">Hola{user.email ? `, ${user.email}` : ""}</h1>
-      <p className="mt-2 text-sm text-white/70">
+    <div className="mx-auto w-full max-w-3xl md:max-w-none">
+      <h1 className="text-center text-2xl font-bold text-white md:text-left">
+        Hola{user.email ? `, ${user.email}` : ""}
+      </h1>
+      <p className="mt-2 text-center text-sm text-white/70 md:text-left">
         Productora: <span className="text-white">{orgName}</span>
         {orgSlug ? (
           <span className="text-white/50">
@@ -43,7 +45,7 @@ export default async function PanelHomePage() {
           </span>
         ) : null}
       </p>
-      <div className="mt-10 grid gap-4 sm:grid-cols-2">
+      <div className="mt-10 grid justify-items-stretch gap-4 sm:grid-cols-2">
         <Link
           href="/app/eventos"
           className="surface-glass block p-6 transition hover:shadow-[var(--shadow-card-hover)]"

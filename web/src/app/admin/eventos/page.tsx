@@ -26,9 +26,11 @@ export default async function AdminEventosPage() {
   }
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold text-white">Eventos</h1>
-      <p className="mt-2 text-sm text-white/65">Vista global (service role), agrupado por productora.</p>
+    <div className="mx-auto w-full max-w-4xl md:mx-0">
+      <div className="text-center md:text-left">
+        <h1 className="text-2xl font-bold text-white">Eventos</h1>
+        <p className="mt-2 text-sm text-white/65">Vista global (service role), agrupado por productora.</p>
+      </div>
 
       <ul className="mt-8 space-y-2">
         {(events ?? []).length === 0 ? (
@@ -39,8 +41,11 @@ export default async function AdminEventosPage() {
               .organizations;
             const o = Array.isArray(org) ? org[0] ?? null : org;
             return (
-              <li key={String((e as { id: string }).id)} className="surface-glass flex flex-col gap-1 p-4 sm:flex-row sm:items-center sm:justify-between">
-                <div>
+              <li
+                key={String((e as { id: string }).id)}
+                className="surface-glass flex flex-col items-center gap-1 p-4 text-center sm:flex-row sm:items-center sm:justify-between sm:text-left"
+              >
+                <div className="min-w-0">
                   <p className="font-medium text-white">{String((e as { name: string }).name)}</p>
                   <p className="text-xs text-white/55">
                     <span className="font-mono">{String((e as { slug: string }).slug)}</span>

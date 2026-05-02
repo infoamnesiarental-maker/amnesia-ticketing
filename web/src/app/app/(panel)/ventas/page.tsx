@@ -64,7 +64,7 @@ export default async function VentasPage({ searchParams }: VentasPageProps) {
 
   if (eventIds.length === 0) {
     return (
-      <div>
+      <div className="mx-auto max-w-lg text-center md:mx-0 md:max-w-none md:text-left">
         <h1 className="text-2xl font-bold text-white">Ventas</h1>
         <p className="mt-2 text-sm text-white/65">
           Todavía no tenés eventos. Creá uno para empezar a recibir órdenes.
@@ -102,7 +102,7 @@ export default async function VentasPage({ searchParams }: VentasPageProps) {
 
   if (ordErr) {
     return (
-      <div className="rounded-xl border border-red-400/40 bg-red-500/10 p-4 text-sm text-red-200">
+      <div className="mx-auto max-w-2xl rounded-xl border border-red-400/40 bg-red-500/10 p-4 text-center text-sm text-red-200 md:text-left">
         No se pudieron cargar ventas. {ordErr.message}
       </div>
     );

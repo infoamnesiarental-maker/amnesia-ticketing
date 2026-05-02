@@ -43,15 +43,15 @@ function QtyRow({
   disabled: boolean;
 }) {
   return (
-    <div className="surface-glass flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
-      <div>
+    <div className="surface-glass flex flex-col items-center gap-3 p-4 text-center sm:flex-row sm:items-center sm:justify-between sm:text-left">
+      <div className="min-w-0 w-full sm:w-auto">
         <p className="font-medium text-white">{tt.name}</p>
         <p className="text-xs text-white/55">
           {money.format(tt.price_ars)} · disponibles: {tt.available_qty}
         </p>
         {tt.description ? <p className="mt-2 text-sm text-white/70">{tt.description}</p> : null}
       </div>
-      <label className="flex items-center gap-2 text-sm text-white/90">
+      <label className="flex items-center justify-center gap-2 text-sm text-white/90 sm:justify-start">
         Cantidad
         <input
           type="number"
@@ -240,13 +240,13 @@ export function PublicTicketeraClient({
   return (
     <form
       onSubmit={onSubmit}
-      className={`flex flex-col gap-10 ${layoutSplit ? "w-full min-w-0" : "mx-auto max-w-2xl"}`}
+      className={`flex flex-col gap-10 text-center sm:text-left ${layoutSplit ? "w-full min-w-0" : "mx-auto w-full max-w-2xl"}`}
     >
       <input type="hidden" name="org_slug" value={organization.slug} />
       <input type="hidden" name="event_slug" value={event.slug} />
 
       <section className="space-y-4">
-        <h2 className="text-lg font-semibold text-white">1. Elegí cantidades</h2>
+        <h2 className="text-lg font-semibold text-white sm:text-left">1. Elegí cantidades</h2>
         <div className="grid gap-3">
           {ticket_types.map((tt) => (
             <QtyRow
@@ -258,14 +258,14 @@ export function PublicTicketeraClient({
             />
           ))}
         </div>
-        <p className="text-sm text-white/80">
+        <p className="text-sm text-white/80 sm:text-left">
           Subtotal: <span className="font-semibold text-white">{money.format(totals.ars)}</span> ({totals.qty}{" "}
           entrada(s))
         </p>
       </section>
 
-      <section className="surface-glass space-y-5 p-6">
-        <div>
+      <section className="surface-glass space-y-5 p-4 sm:p-6">
+        <div className="text-center sm:text-left">
           <h2 className="text-lg font-semibold text-white">2. Datos de los asistentes</h2>
           <p className="mt-1 text-xs text-white/55">
             Necesitamos los datos de cada persona que va a entrar (uno por entrada). El primero es el comprador.
@@ -277,13 +277,13 @@ export function PublicTicketeraClient({
           return (
             <div
               key={idx}
-              className={`rounded-xl border p-4 ${
+              className={`rounded-xl border p-4 text-left ${
                 isBuyer
                   ? "border-brand/40 bg-brand/5"
                   : "border-white/10 bg-white/[0.03]"
               }`}
             >
-              <div className="mb-3 flex items-center justify-between gap-2">
+              <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
                 <p className="text-sm font-semibold text-white">
                   {isBuyer ? "Asistente 1 · Comprador" : `Asistente ${idx + 1}`}
                 </p>
@@ -345,7 +345,7 @@ export function PublicTicketeraClient({
           );
         })}
 
-        <label className="grid gap-2 text-sm text-white/90">
+        <label className="grid gap-2 text-left text-sm text-white/90">
           Email del comprador (donde te llegan los QR)
           <input
             className="input-design"
@@ -360,15 +360,17 @@ export function PublicTicketeraClient({
         </label>
       </section>
 
-      <section className="surface-glass space-y-4 p-6">
-        <h2 className="text-lg font-semibold text-white">3. Pago y comprobante</h2>
-        <p className="text-sm text-white/75">
+      <section className="surface-glass space-y-4 p-4 sm:p-6">
+        <h2 className="text-lg font-semibold text-white sm:text-left">3. Pago y comprobante</h2>
+        <p className="text-sm text-white/75 sm:text-left">
           Transferí exactamente <span className="font-semibold text-brand">{money.format(totals.ars)}</span> al alias o CVU
           de Mercado Pago del organizador:
         </p>
-        <p className="rounded-xl border border-brand/40 bg-brand/10 px-4 py-3 font-mono text-lg text-white">{event.mp_alias}</p>
-        <p className="text-xs text-white/50">El monto debe coincidir con el total de arriba para validar automáticamente.</p>
-        <label className="grid gap-2 text-sm text-white/90">
+        <p className="rounded-xl border border-brand/40 bg-brand/10 px-4 py-3 text-center font-mono text-base text-white sm:text-left sm:text-lg">
+          {event.mp_alias}
+        </p>
+        <p className="text-xs text-white/50 sm:text-left">El monto debe coincidir con el total de arriba para validar automáticamente.</p>
+        <label className="grid gap-2 text-left text-sm text-white/90">
           Captura del comprobante (JPG, PNG o WebP, máx. {(PUBLIC_PROOF_MAX_BYTES / (1024 * 1024)).toFixed(0)} MB)
           <input className="text-sm text-white/80 file:mr-3 file:rounded-lg file:border-0 file:bg-white/10 file:px-3 file:py-2 file:text-white" name="proof" type="file" accept="image/jpeg,image/png,image/webp" required disabled={pending} />
         </label>
@@ -394,7 +396,7 @@ export function PublicTicketeraHero({ context }: { context: TicketeraContext }) 
   const when = startsAtLabel(event.starts_at);
 
   return (
-    <header className="space-y-3 border-b border-white/10 pb-10">
+    <header className="space-y-3 border-b border-white/10 pb-10 text-center md:text-left">
       <p className="text-xs font-semibold uppercase tracking-wider text-brand">Ticketera</p>
       <p className="text-sm text-white/60">
         {organization.name} · <span className="font-mono text-white/50">{organization.slug}</span>

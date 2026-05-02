@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { createSupabaseServiceRoleClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -26,6 +27,33 @@ function slugify(input: string): string {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "")
     .slice(0, 48);
+}
+
+/**
+ * Genera un slug único a partir del nombre. Si `excludingOrganizationId` coincide con la fila que ya usa ese slug, se mantiene.
+ */
+async function allocateOrganizationSlug(
+  supabase: SupabaseClient,
+  nameForSlug: string,
+  excludingOrganizationId?: string,
+): Promise<{ ok: true; slug: string } | { ok: false; message: string }> {
+  const base = slugify(nameForSlug);
+  if (!base) {
+    return {
+      ok: false,
+      message: "El nombre no permite generar una ruta válida. Usá letras o números en el nombre de la productora.",
+    };
+  }
+
+  for (let n = 0; n < 100; n++) {
+    const candidate = n === 0 ? base : `${base}-${n + 1}`;
+    const { data: row, error } = await supabase.from("organizations").select("id").eq("slug", candidate).maybeSingle();
+    if (error) return { ok: false, message: error.message };
+    if (!row) return { ok: true, slug: candidate };
+    if (excludingOrganizationId && row.id === excludingOrganizationId) return { ok: true, slug: candidate };
+  }
+
+  return { ok: true, slug: `${base}-${crypto.randomUUID().replace(/-/g, "").slice(0, 8)}` };
 }
 
 const UUID_RE =
@@ -134,11 +162,11 @@ export async function bootstrapOrganization(formData: FormData): Promise<ActionR
   }
 
   const name = String(formData.get("name") || "").trim();
-  let slug = String(formData.get("slug") || "").trim();
   if (!name) return err("El nombre es obligatorio.");
-  if (!slug) slug = slugify(name);
-  else slug = slugify(slug);
-  if (!slug) return err("Slug inválido.");
+
+  const slugAlloc = await allocateOrganizationSlug(supabase, name);
+  if (!slugAlloc.ok) return err(slugAlloc.message);
+  const slug = slugAlloc.slug;
 
   const contact = user.email ?? "";
 
@@ -150,7 +178,7 @@ export async function bootstrapOrganization(formData: FormData): Promise<ActionR
 
   if (rpcErr) {
     if (rpcErr.code === "23505" || /duplicate key|unique constraint/i.test(rpcErr.message ?? "")) {
-      return err("Ese slug ya existe. Elegí otro.");
+      return err("No se pudo crear la productora: la ruta ya está ocupada. Probá de nuevo o variá un poco el nombre.");
     }
     if (/function public\.bootstrap_organization|does not exist|schema cache/i.test(rpcErr.message ?? "")) {
       return err(
@@ -172,6 +200,70 @@ export async function bootstrapOrganization(formData: FormData): Promise<ActionR
   }
 
   revalidatePath("/app", "layout");
+  return { ok: true };
+}
+
+function isEmail(value: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
+/** Datos de la productora editables por owner/admin (nombre, contacto, CUIT). El slug se asigna siempre desde el nombre. */
+export async function updateOrganizationProfile(formData: FormData): Promise<ActionResult> {
+  const supabase = await createSupabaseServerClient();
+  const {
+    data: { user },
+    error: userErr,
+  } = await supabase.auth.getUser();
+  if (userErr || !user) return err("No hay sesión.");
+
+  const { data: mem, error: mErr } = await supabase
+    .from("org_members")
+    .select("organization_id, role")
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  if (mErr || !mem?.organization_id) return err("No tenés una productora asignada.");
+
+  const role = String(mem.role ?? "");
+  if (role !== "owner" && role !== "admin") {
+    return err("Solo el dueño o un administrador de la productora puede editar estos datos.");
+  }
+
+  const orgId = mem.organization_id as string;
+  const name = String(formData.get("name") || "").trim();
+  if (!name) return err("El nombre de la productora es obligatorio.");
+
+  const slugAlloc = await allocateOrganizationSlug(supabase, name, orgId);
+  if (!slugAlloc.ok) return err(slugAlloc.message);
+  const slug = slugAlloc.slug;
+
+  const contact_email = String(formData.get("contact_email") || "").trim();
+  if (!contact_email) return err("El email de contacto es obligatorio.");
+  if (!isEmail(contact_email)) return err("Email de contacto inválido.");
+
+  const cuitRaw = String(formData.get("cuit") || "").trim();
+  const cuit = cuitRaw ? cuitRaw.slice(0, 20) : null;
+
+  const { error: upErr } = await supabase
+    .from("organizations")
+    .update({
+      name,
+      slug,
+      contact_email,
+      cuit,
+    })
+    .eq("id", orgId);
+
+  if (upErr) {
+    if (upErr.code === "23505" || /duplicate key|unique constraint/i.test(upErr.message ?? "")) {
+      return err("No se pudo actualizar: conflicto de ruta. Probá de nuevo o variá el nombre.");
+    }
+    return err(upErr.message);
+  }
+
+  revalidatePath("/app/perfil");
+  revalidatePath("/app", "layout");
+  revalidatePath("/app/eventos", "layout");
   return { ok: true };
 }
 

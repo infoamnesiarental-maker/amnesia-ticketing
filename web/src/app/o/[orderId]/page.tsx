@@ -145,14 +145,14 @@ export default async function BuyerOrderPage({ params }: PageProps) {
   );
 
   return (
-    <main className="mx-auto max-w-4xl px-4 py-10">
+    <main className="mx-auto max-w-4xl px-4 py-8 text-center sm:py-10 sm:text-left">
       <div className="text-xs text-white/55">
-        <Link href={`/e/${view.event.org_slug}/${view.event.slug}`} className="hover:text-white">
+        <Link href={`/e/${view.event.org_slug}/${view.event.slug}`} className="inline-block hover:text-white">
           ← Volver al evento
         </Link>
       </div>
 
-      <header className="mt-4">
+      <header className="mt-4 sm:text-left">
         <p className="text-xs text-white/55">{view.event.org_name}</p>
         <h1 className="mt-1 text-2xl font-bold text-white">{view.event.name}</h1>
         {view.event.place ? <p className="mt-1 text-sm text-white/65">{view.event.place}</p> : null}
@@ -161,12 +161,12 @@ export default async function BuyerOrderPage({ params }: PageProps) {
         ) : null}
       </header>
 
-      <section className={`mt-6 rounded-xl border p-4 ${sInfo.cls}`}>
+      <section className={`mt-6 rounded-xl border p-4 text-left ${sInfo.cls}`}>
         <p className="text-base font-semibold">{sInfo.title}</p>
         <p className="mt-1 text-sm opacity-90">{sInfo.desc}</p>
       </section>
 
-      <section className="surface-glass mt-6 p-5">
+      <section className="surface-glass mt-6 p-5 text-left">
         <h2 className="text-sm font-semibold uppercase tracking-wider text-white/55">Detalle de la compra</h2>
         <p className="mt-2 text-sm text-white/85">
           {view.order.buyer_first_name} {view.order.buyer_last_name} · DNI {view.order.buyer_dni}
@@ -191,7 +191,7 @@ export default async function BuyerOrderPage({ params }: PageProps) {
       </section>
 
       {view.order.status === "validated" && qrSvgs.length > 0 ? (
-        <section className="mt-8">
+        <section className="mt-8 text-center sm:text-left">
           <h2 className="text-sm font-semibold uppercase tracking-wider text-white/55">
             Tus entradas ({qrSvgs.length})
           </h2>

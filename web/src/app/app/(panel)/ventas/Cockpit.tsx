@@ -127,18 +127,16 @@ export function Cockpit({
   }
 
   return (
-    <div>
-      <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
-        <div>
-          <h1 className="text-2xl font-bold text-white">Validar pagos</h1>
-          <p className="mt-1 text-sm text-white/60">
-            Compará el comprobante con tu cuenta de Mercado Pago / banco y confirmá.
-          </p>
-        </div>
+    <div className="mx-auto w-full max-w-6xl md:max-w-none">
+      <div className="text-center sm:text-left">
+        <h1 className="text-2xl font-bold text-white">Validar pagos</h1>
+        <p className="mt-1 text-sm text-white/60">
+          Compará el comprobante con tu cuenta de Mercado Pago / banco y confirmá.
+        </p>
       </div>
 
-      <div className="mt-5 grid gap-3 sm:grid-cols-[auto_1fr_auto] sm:items-center">
-        <nav className="flex flex-wrap gap-2">
+      <div className="mt-5 flex flex-col gap-3 sm:grid sm:grid-cols-[auto_1fr_auto] sm:items-center">
+        <nav className="flex flex-wrap justify-center gap-2 sm:justify-start">
           {FILTER_OPTIONS.map((f) => {
             const active = f.key === filter;
             const c = filterCounts[f.key] ?? 0;
@@ -158,7 +156,7 @@ export function Cockpit({
           })}
         </nav>
 
-        <form onSubmit={onSubmitSearch} className="flex w-full items-center gap-2">
+        <form onSubmit={onSubmitSearch} className="flex w-full min-w-0 items-center gap-2">
           <input
             type="search"
             name="q"
@@ -181,7 +179,7 @@ export function Cockpit({
           <select
             value={selectedEvent}
             onChange={changeEvent}
-            className="input-design h-10 max-w-[220px] text-sm"
+            className="input-design h-10 w-full text-sm sm:w-auto sm:max-w-[220px]"
           >
             <option value="">Todos los eventos</option>
             {events.map((ev) => (
@@ -195,7 +193,7 @@ export function Cockpit({
 
       <div className="mt-6 grid gap-4 lg:grid-cols-[minmax(0,360px)_minmax(0,1fr)]">
         {/* Cola */}
-        <aside className="surface-glass max-h-[calc(100vh-220px)] overflow-y-auto p-2">
+        <aside className="surface-glass max-h-[min(45vh,420px)] overflow-y-auto p-2 lg:max-h-[calc(100vh-220px)]">
           {orders.length === 0 ? (
             <p className="p-4 text-sm text-white/60">No hay órdenes con estos filtros.</p>
           ) : (

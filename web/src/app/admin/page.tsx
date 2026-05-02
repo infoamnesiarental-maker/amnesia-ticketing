@@ -79,12 +79,14 @@ export default async function AdminHomePage() {
     .reduce((acc, o) => acc + Number((o as { total_ars: number }).total_ars ?? 0), 0);
 
   return (
-    <div>
-      <p className="text-xs font-semibold uppercase tracking-[0.22em] text-amber-200/90">Vista general</p>
-      <h1 className="mt-2 text-3xl font-bold text-white">Resumen operativo</h1>
-      <p className="mt-2 max-w-2xl text-sm text-white/65">
-        Un pantallazo del sistema: aprobación de productoras, actividad reciente, ventas/órdenes y últimas altas.
-      </p>
+    <div className="mx-auto w-full max-w-6xl md:mx-0">
+      <div className="text-center md:text-left">
+        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-amber-200/90">Vista general</p>
+        <h1 className="mt-2 text-2xl font-bold text-white sm:text-3xl">Resumen operativo</h1>
+        <p className="mx-auto mt-2 max-w-2xl text-sm text-white/65 md:mx-0">
+          Un pantallazo del sistema: aprobación de productoras, actividad reciente, ventas/órdenes y últimas altas.
+        </p>
+      </div>
 
       <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <div className="surface-glass p-6">

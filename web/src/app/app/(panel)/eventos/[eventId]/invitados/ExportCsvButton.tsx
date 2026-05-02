@@ -105,7 +105,7 @@ export function ExportCsvButton({ rows, eventName }: ExportCsvButtonProps) {
       type="button"
       onClick={handleDownload}
       disabled={rows.length === 0}
-      className="rounded-lg border border-white/15 bg-white/5 px-4 py-2 text-xs font-medium text-white/85 transition hover:bg-white/10 disabled:opacity-50"
+      className="w-full rounded-lg border border-white/15 bg-white/5 px-4 py-2 text-xs font-medium text-white/85 transition hover:bg-white/10 disabled:opacity-50 sm:w-auto"
     >
       Descargar CSV
     </button>

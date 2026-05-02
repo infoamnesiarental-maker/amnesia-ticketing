@@ -102,7 +102,7 @@ export default function AuthPage() {
       />
       <SiteHeader variant="solid" minimal />
 
-      <div className="section-padding-x relative z-10 mx-auto flex min-h-screen max-w-md flex-col justify-center px-0 py-24">
+      <div className="section-padding-x relative z-10 mx-auto flex min-h-screen w-full max-w-md flex-col justify-center px-4 py-20 sm:px-6 sm:py-24">
         <Link
           className="mb-8 inline-flex text-sm text-white/70 transition-opacity duration-200 hover:opacity-100"
           href="/"
