@@ -1,5 +1,7 @@
 "use client";
 
+import { BrowserMultiFormatReader } from "@zxing/browser";
+import { BarcodeFormat, DecodeHintType } from "@zxing/library";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { checkInByUidManualAction, checkInTicketAction, searchDoorTicketsAction } from "./actions";
@@ -65,7 +67,10 @@ export function DoorScannerClient({ events }: { events: DoorEvent[] }) {
   const [sessionCount, setSessionCount] = useState(0);
   const [result, setResult] = useState<CheckinUiResult | null>(null);
   const [cameraError, setCameraError] = useState("");
-  const [supported, setSupported] = useState(false);
+  /** getUserMedia disponible (HTTPS / permisos / navegador) */
+  const [cameraCapable, setCameraCapable] = useState(false);
+  /** Chrome/Edge: BarcodeDetector; resto: fallback ZXing sobre el mismo video */
+  const [useNativeDetector, setUseNativeDetector] = useState(false);
   const [dniQuery, setDniQuery] = useState("");
   const [manualFound, setManualFound] = useState<ManualFoundItem[]>([]);
   const [manualInfo, setManualInfo] = useState("");
@@ -75,6 +80,8 @@ export function DoorScannerClient({ events }: { events: DoorEvent[] }) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const detectorRef = useRef<any>(null);
+  const zxingReaderRef = useRef<BrowserMultiFormatReader | null>(null);
+  const zxingControlsRef = useRef<{ stop: () => void } | null>(null);
   const rafRef = useRef<number | null>(null);
   const busyRef = useRef(false);
   const lastUidRef = useRef("");
@@ -90,8 +97,11 @@ export function DoorScannerClient({ events }: { events: DoorEvent[] }) {
   }, []);
 
   useEffect(() => {
-    const hasDetector = typeof window !== "undefined" && "BarcodeDetector" in window;
-    setSupported(hasDetector);
+    const hasCamera =
+      typeof navigator !== "undefined" && typeof navigator.mediaDevices?.getUserMedia === "function";
+    const hasNative = typeof window !== "undefined" && "BarcodeDetector" in window;
+    setCameraCapable(hasCamera);
+    setUseNativeDetector(hasNative);
   }, []);
 
   useEffect(() => {
@@ -159,8 +169,10 @@ export function DoorScannerClient({ events }: { events: DoorEvent[] }) {
   async function startScanner() {
     setCameraError("");
     setResult(null);
-    if (!supported) {
-      setCameraError("Este navegador no soporta escaneo nativo. Usá la búsqueda por lista para ingresar manualmente.");
+    if (!cameraCapable) {
+      setCameraError(
+        "Este navegador no puede abrir la cámara desde esta página (probá HTTPS, actualizar el navegador o revisar permisos). Podés usar la lista de puerta como alternativa.",
+      );
       return;
     }
     try {
@@ -173,10 +185,37 @@ export function DoorScannerClient({ events }: { events: DoorEvent[] }) {
       if (!video) return;
       video.srcObject = stream;
       await video.play();
-      const DetectorCtor = (window as any).BarcodeDetector;
-      detectorRef.current = new DetectorCtor({ formats: ["qr_code"] });
+
+      if (useNativeDetector) {
+        const DetectorCtor = (window as any).BarcodeDetector;
+        detectorRef.current = new DetectorCtor({ formats: ["qr_code"] });
+        setScanning(true);
+        scanLoop();
+        return;
+      }
+
+      const hints = new Map<DecodeHintType, unknown>();
+      hints.set(DecodeHintType.POSSIBLE_FORMATS, [BarcodeFormat.QR_CODE]);
+      const reader = new BrowserMultiFormatReader(hints);
+      zxingReaderRef.current = reader;
+      const controls = await reader.decodeFromStream(stream, video, (result, _err) => {
+        if (!result) return;
+        const raw = String(result.getText() ?? "").trim();
+        if (!raw) return;
+        const uid = normalizeUid(raw);
+        const now = Date.now();
+        if (uid === lastUidRef.current && now - lastReadAtRef.current < 1500) return;
+        lastUidRef.current = uid;
+        lastReadAtRef.current = now;
+        void (async () => {
+          if (busyRef.current) return;
+          busyRef.current = true;
+          await submitCheckin(uid);
+          busyRef.current = false;
+        })();
+      });
+      zxingControlsRef.current = controls;
       setScanning(true);
-      scanLoop();
     } catch (e) {
       const message = e instanceof Error ? e.message : "No se pudo iniciar la cámara.";
       setCameraError(message);
@@ -189,6 +228,16 @@ export function DoorScannerClient({ events }: { events: DoorEvent[] }) {
       window.cancelAnimationFrame(rafRef.current);
       rafRef.current = null;
     }
+    if (zxingControlsRef.current) {
+      try {
+        zxingControlsRef.current.stop();
+      } catch {
+        /* no-op */
+      }
+      zxingControlsRef.current = null;
+    }
+    zxingReaderRef.current = null;
+    detectorRef.current = null;
     if (streamRef.current) {
       for (const t of streamRef.current.getTracks()) t.stop();
       streamRef.current = null;
@@ -341,6 +390,12 @@ export function DoorScannerClient({ events }: { events: DoorEvent[] }) {
                 ) : null}
               </div>
             </div>
+            {scanning && !useNativeDetector ? (
+              <p className="mt-2 text-xs text-white/50">
+                Modo compatible: tu navegador no trae el lector nativo de QR; usamos uno por software (un poco más lento,
+                misma cámara).
+              </p>
+            ) : null}
             {cameraError ? <p className="mt-2 text-xs text-red-300">{cameraError}</p> : null}
           </>
         ) : (
