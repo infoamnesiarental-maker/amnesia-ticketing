@@ -66,11 +66,11 @@ export default async function Home() {
                 </Link>
               </div>
 
-              <div className="mt-10 flex flex-wrap justify-center gap-2.5">
+              <div className="mt-10 grid w-full max-w-xl grid-cols-2 gap-2 sm:max-w-2xl sm:gap-2.5">
                 {services.map((s) => (
                   <span
                     key={s.num}
-                    className="rounded-full border border-brand/25 bg-black/25 px-4 py-2 text-sm text-white/90 backdrop-blur"
+                    className="min-w-0 rounded-full border border-brand/25 bg-black/25 px-3 py-1.5 text-xs text-white/90 backdrop-blur sm:px-4 sm:py-2 sm:text-sm"
                   >
                     <span className="font-mono text-brand">{s.num}</span> <span className="ml-2">{s.title}</span>
                   </span>

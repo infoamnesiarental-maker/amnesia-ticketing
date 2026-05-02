@@ -11,8 +11,22 @@ interface SiteHeaderProps {
   minimal?: boolean;
 }
 
+function IconHamburger() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden className="h-5 w-5">
+      <path
+        d="M4 7h16M4 12h16M4 17h16"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
 export function SiteHeader({ variant = "hero", minimal = false }: SiteHeaderProps) {
   const [scrolled, setScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     if (variant !== "hero") return;
@@ -22,6 +36,10 @@ export function SiteHeader({ variant = "hero", minimal = false }: SiteHeaderProp
     return () => window.removeEventListener("scroll", onScroll);
   }, [variant]);
 
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [variant, minimal]);
+
   const headerBg =
     variant === "solid" || scrolled
       ? "bg-[var(--header-scroll-bg)] backdrop-blur-[10px] border-b border-white/10"
@@ -29,6 +47,7 @@ export function SiteHeader({ variant = "hero", minimal = false }: SiteHeaderProp
 
   const showMenu = !minimal && variant !== "hero";
   const showCta = !minimal;
+  const showHeroHamburger = !minimal && variant === "hero";
 
   return (
     <header
@@ -41,9 +60,11 @@ export function SiteHeader({ variant = "hero", minimal = false }: SiteHeaderProp
           className="flex min-w-0 items-center gap-2 text-white sm:gap-3"
           aria-label="Inicio Amnesia Ticketing"
         >
-          <span className="relative h-9 w-9 shrink-0 overflow-hidden rounded-xl bg-black/20 shadow-lg sm:h-10 sm:w-10">
-            <Image src="/logoAmnesia.png" alt="" fill sizes="40px" className="object-contain p-1.5" priority />
-          </span>
+          {variant === "hero" ? null : (
+            <span className="relative h-9 w-9 shrink-0 overflow-hidden rounded-xl bg-black/20 shadow-lg sm:h-10 sm:w-10">
+              <Image src="/logoAmnesia.png" alt="" fill sizes="40px" className="object-contain p-1.5" priority />
+            </span>
+          )}
           <span className="truncate text-base font-semibold leading-tight tracking-tight sm:text-lg md:text-xl">
             Amnesia Ticketing
           </span>
@@ -63,7 +84,46 @@ export function SiteHeader({ variant = "hero", minimal = false }: SiteHeaderProp
           </nav>
         ) : null}
 
-        {showCta ? (
+        {showHeroHamburger ? (
+          <div className="relative">
+            <button
+              type="button"
+              className="inline-flex items-center justify-center rounded-full border border-white/15 bg-black/20 p-3 text-white/90 backdrop-blur transition hover:bg-black/30 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--brand-orange)]"
+              aria-label={mobileMenuOpen ? "Cerrar menú" : "Abrir menú"}
+              aria-expanded={mobileMenuOpen}
+              onClick={() => setMobileMenuOpen((v) => !v)}
+            >
+              <IconHamburger />
+            </button>
+
+            {mobileMenuOpen ? (
+              <div
+                className="absolute right-0 mt-3 w-[min(92vw,22rem)] rounded-2xl border border-white/10 bg-[rgba(10,10,10,0.92)] p-2 shadow-[var(--shadow-soft)] backdrop-blur"
+                role="menu"
+                aria-label="Menú"
+              >
+                <Link
+                  href="/auth?redirect=%2Fapp%2Fonboarding"
+                  className="flex w-full items-center justify-between rounded-xl px-3 py-3 text-sm font-semibold text-white hover:bg-white/5"
+                  role="menuitem"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <span>Crear mi evento</span>
+                  <span aria-hidden>→</span>
+                </Link>
+                <Link
+                  href="/auth"
+                  className="flex w-full items-center justify-between rounded-xl px-3 py-3 text-sm font-semibold text-white/85 hover:bg-white/5 hover:text-white"
+                  role="menuitem"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <span>Login</span>
+                  <span aria-hidden>→</span>
+                </Link>
+              </div>
+            ) : null}
+          </div>
+        ) : showCta ? (
           <div className="flex items-center gap-3">
             <Link href="/auth" className="btn-ghost-nav text-sm md:hidden">
               Login
