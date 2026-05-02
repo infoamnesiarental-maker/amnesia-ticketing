@@ -3,6 +3,46 @@ import { redirect } from "next/navigation";
 
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
+function IconCalendar() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M8 2v4m8-4v4M4 9h16M5 5h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+function IconPayments() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9l-6-6Z"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinejoin="round"
+      />
+      <path d="M14 3v6h6M8 13h8M8 17h5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function IconCard() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M4 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7Z"
+        stroke="currentColor"
+        strokeWidth="1.7"
+      />
+      <path d="M4 10h16" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 export default async function PanelHomePage() {
   const supabase = await createSupabaseServerClient();
   const {
@@ -50,21 +90,36 @@ export default async function PanelHomePage() {
           href="/app/eventos"
           className="surface-glass block p-6 transition hover:shadow-[var(--shadow-card-hover)]"
         >
-          <h2 className="text-lg font-semibold text-white">Eventos</h2>
+          <div className="flex items-center gap-3">
+            <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-brand/15 text-brand ring-1 ring-brand/25">
+              <IconCalendar />
+            </span>
+            <h2 className="text-lg font-semibold text-white">Eventos</h2>
+          </div>
           <p className="mt-2 text-sm text-white/65">Crear eventos y definir tipos de entrada (precio, stock, venta).</p>
         </Link>
         <Link
           href="/app/ventas"
           className="surface-glass block p-6 transition hover:shadow-[var(--shadow-card-hover)]"
         >
-          <h2 className="text-lg font-semibold text-white">Ventas</h2>
+          <div className="flex items-center gap-3">
+            <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-brand/15 text-brand ring-1 ring-brand/25">
+              <IconPayments />
+            </span>
+            <h2 className="text-lg font-semibold text-white">Ventas</h2>
+          </div>
           <p className="mt-2 text-sm text-white/65">Ver órdenes, compradores y comprobantes (MVP).</p>
         </Link>
         <Link
           href="/app/configuracion/mp"
           className="surface-glass block p-6 transition hover:shadow-[var(--shadow-card-hover)]"
         >
-          <h2 className="text-lg font-semibold text-white">Mercado Pago</h2>
+          <div className="flex items-center gap-3">
+            <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-brand/15 text-brand ring-1 ring-brand/25">
+              <IconCard />
+            </span>
+            <h2 className="text-lg font-semibold text-white">Mercado Pago</h2>
+          </div>
           <p className="mt-2 text-sm text-white/65">
             Cargar el access token de tu productora para validar pagos automáticamente.
           </p>

@@ -225,21 +225,6 @@ export function ProducerSidebar({
           </nav>
         </div>
       </aside>
-
-      {/* Móvil: barra inferior (scroll horizontal si no entra todo) */}
-      <nav
-        className="fixed bottom-0 left-0 right-0 z-40 border-t border-white/10 bg-[#0a0a0a]/95 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 backdrop-blur-md md:hidden"
-        aria-label="Panel productora móvil"
-      >
-        <div className="flex gap-1 overflow-x-auto px-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          <NavPill href="/app" label="Inicio" icon={<IconHome />} />
-          <NavPill href="/app/eventos" label="Eventos" icon={<IconCalendar />} />
-          <NavPill href="/app/ventas" label="Ventas" icon={<IconPayments />} />
-          <NavPill href="/app/puerta" label="Puerta" icon={<IconScan />} />
-          <NavPill href="/app/configuracion/mp" label="MP" icon={<IconCard />} />
-          <NavPill href="/app/perfil" label="Perfil" icon={<IconUser />} />
-        </div>
-      </nav>
     </>
   );
 }
