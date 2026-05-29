@@ -4,6 +4,43 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 
+function IsActiveToggle({ defaultActive, disabled }: { defaultActive: boolean; disabled: boolean }) {
+  const [active, setActive] = useState(defaultActive);
+  return (
+    <div
+      className={`flex items-center justify-between gap-3 rounded-xl border px-4 py-3.5 transition-colors ${
+        active ? "border-emerald-400/30 bg-emerald-500/8" : "border-white/10 bg-white/[0.03]"
+      }`}
+    >
+      <input type="hidden" name="is_active" value={active ? "on" : ""} />
+      <div>
+        <p className={`text-sm font-semibold ${active ? "text-emerald-200" : "text-white/55"}`}>
+          {active ? "Disponible para la venta" : "No disponible"}
+        </p>
+        <p className="mt-0.5 text-xs text-white/35">
+          {active ? "Aparece en la ticketera pública." : "Oculto para los compradores."}
+        </p>
+      </div>
+      <button
+        type="button"
+        role="switch"
+        aria-checked={active}
+        disabled={disabled}
+        onClick={() => setActive((v) => !v)}
+        className={`relative flex h-7 w-12 shrink-0 items-center rounded-full border transition-colors ${
+          active ? "border-emerald-400/50 bg-emerald-500/35" : "border-white/20 bg-white/10"
+        } disabled:opacity-40`}
+      >
+        <span
+          className={`absolute h-5 w-5 rounded-full shadow transition-transform ${
+            active ? "translate-x-6 bg-emerald-300" : "translate-x-1 bg-white/50"
+          }`}
+        />
+      </button>
+    </div>
+  );
+}
+
 import { createTicketType, updateTicketType } from "@/app/app/actions";
 
 export interface TicketTypeFormInitial {
@@ -139,16 +176,7 @@ export function TicketTypeForm({
             defaultValue={initial?.sales_ends_at_input ?? ""}
           />
         </label>
-        <label className="flex items-center gap-3 text-sm text-white/90">
-          <input
-            type="checkbox"
-            name="is_active"
-            defaultChecked={initial?.is_active ?? true}
-            disabled={pending}
-            className="size-4 accent-[var(--brand-orange)]"
-          />
-          Venta activa
-        </label>
+        <IsActiveToggle defaultActive={initial?.is_active ?? true} disabled={pending} />
         <button className="btn-cta-primary mt-2 w-full justify-center" type="submit" disabled={pending}>
           {pending
             ? "Guardando…"
