@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 interface SiteHeaderProps {
@@ -25,6 +26,8 @@ function IconHamburger() {
 }
 
 export function SiteHeader({ variant = "hero", minimal = false }: SiteHeaderProps) {
+  const pathname = usePathname();
+  const isPublicEventPage = pathname?.startsWith("/e/") ?? false;
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -46,7 +49,7 @@ export function SiteHeader({ variant = "hero", minimal = false }: SiteHeaderProp
       : "bg-transparent";
 
   const showMenu = !minimal && variant !== "hero";
-  const showCta = !minimal;
+  const showCta = !minimal && !isPublicEventPage;
   const showHeroHamburger = !minimal && variant === "hero";
 
   return (
