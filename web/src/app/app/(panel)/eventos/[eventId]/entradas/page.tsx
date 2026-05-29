@@ -63,9 +63,17 @@ export default async function EntradasListPage({ params }: { params: Promise<{ e
             <span className="font-mono text-white/50">({String(event.slug)})</span>
           </p>
         </div>
-        <Link href={`${base}/nuevo`} className="btn-cta-primary w-full justify-center sm:w-fit">
-          Nuevo tipo
-        </Link>
+        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
+          <Link
+            href={`/app/eventos/${eventId}/venta-manual`}
+            className="rounded-lg border border-amber-400/35 bg-amber-500/10 px-4 py-2 text-center text-sm font-medium text-amber-100 hover:bg-amber-500/20"
+          >
+            Venta manual
+          </Link>
+          <Link href={`${base}/nuevo`} className="btn-cta-primary w-full justify-center sm:w-fit">
+            Nuevo tipo
+          </Link>
+        </div>
       </div>
 
       <ul className="mt-8 grid gap-3">
