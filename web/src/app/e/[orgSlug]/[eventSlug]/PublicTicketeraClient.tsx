@@ -40,15 +40,15 @@ function PromoBanner({ whatsapp, eventName }: { whatsapp: string; eventName: str
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="mb-4 flex w-full items-center justify-between gap-4 overflow-hidden rounded-2xl border border-[#FF5500]/40 bg-[#FF5500]/15 px-4 py-4 no-underline transition-all active:scale-[0.99]"
-      style={{ boxShadow: "0 0 32px -4px rgba(255,85,0,0.30)" }}
+      className="mb-4 flex w-full flex-col gap-3 overflow-hidden rounded-2xl border border-[#FF5500]/40 bg-[#FF5500]/12 px-4 py-4 no-underline transition-opacity active:opacity-80"
+      style={{ boxShadow: "0 0 32px -4px rgba(255,85,0,0.28)" }}
     >
-      <span className="min-w-0">
-        <span className="mb-2 inline-flex items-center gap-1.5 rounded-full bg-[#FF5500]/30 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-[#FF7733]">
+      <span>
+        <span className="mb-2 inline-flex items-center gap-1.5 rounded-full bg-[#FF5500]/30 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-[#FF6633]">
           <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#FF5500]" aria-hidden />
           Promo exclusiva
         </span>
-        <p className="text-base font-bold leading-snug text-white">
+        <p className="text-[15px] font-bold leading-snug text-white">
           30% OFF — ¡Consultá cómo conseguirla!
         </p>
         <p className="mt-1 text-xs text-white/55">
@@ -56,7 +56,7 @@ function PromoBanner({ whatsapp, eventName }: { whatsapp: string; eventName: str
         </p>
       </span>
 
-      <span className="shrink-0 rounded-xl bg-[#FF5500] px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-[#FF5500]/40">
+      <span className="flex w-full items-center justify-center rounded-xl bg-[#FF5500] py-3 text-sm font-bold text-white shadow-md shadow-[#FF5500]/35">
         Conseguir descuento
       </span>
     </a>
