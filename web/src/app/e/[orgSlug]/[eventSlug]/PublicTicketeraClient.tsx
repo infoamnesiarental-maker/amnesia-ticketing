@@ -27,6 +27,84 @@ function roundMoney(n: number): number {
   return Math.round(n * 100) / 100;
 }
 
+// ── Promo WhatsApp banner ─────────────────────────────────────────────────────
+
+function PromoBanner({ whatsapp, eventName }: { whatsapp: string; eventName: string }) {
+  const msg = encodeURIComponent(
+    `Hola! Vi el evento "${eventName}" y quiero saber cómo conseguir la promo 🎟️`,
+  );
+  const href = `https://wa.me/${whatsapp}?text=${msg}`;
+
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="mb-4 flex w-full items-stretch overflow-hidden rounded-2xl border border-amber-400/40 bg-gradient-to-r from-amber-500/15 via-orange-500/10 to-amber-500/15 no-underline transition-all hover:border-amber-400/60 hover:from-amber-500/22 active:scale-[0.99]"
+      style={{ boxShadow: "0 0 24px -4px rgba(251,146,60,0.18)" }}
+    >
+      {/* Franja lateral animada */}
+      <span
+        className="w-1.5 shrink-0 bg-gradient-to-b from-amber-400 via-orange-400 to-amber-400"
+        style={{ animation: "promoBar 2s ease-in-out infinite" }}
+        aria-hidden
+      />
+
+      <span className="flex flex-1 items-center justify-between gap-3 px-4 py-4">
+        <span className="min-w-0">
+          {/* Badge pulsante */}
+          <span className="mb-2 inline-flex items-center gap-1.5 rounded-full bg-amber-400/20 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-amber-300">
+            <span
+              className="inline-block h-1.5 w-1.5 rounded-full bg-amber-400"
+              style={{ animation: "promoDot 1.2s ease-in-out infinite" }}
+              aria-hidden
+            />
+            Promo exclusiva
+          </span>
+          <p className="text-base font-bold leading-snug text-white">
+            30% OFF — ¡Consultá cómo conseguirla!
+          </p>
+          <p className="mt-1 text-xs text-white/55">
+            Escribinos por WhatsApp antes de comprar
+          </p>
+        </span>
+
+        {/* Botón con ícono WhatsApp + flecha animada */}
+        <span className="flex shrink-0 flex-col items-center gap-1.5">
+          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#25D366] shadow-lg shadow-[#25D366]/30">
+            {/* WhatsApp icon */}
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="white" aria-hidden>
+              <path d="M20.472 3.528A11.955 11.955 0 0 0 12 0C5.373 0 0 5.373 0 12c0 2.117.552 4.18 1.602 5.993L0 24l6.197-1.576A11.944 11.944 0 0 0 12 24c6.627 0 12-5.373 12-12a11.955 11.955 0 0 0-3.528-8.472ZM12 22a9.944 9.944 0 0 1-5.07-1.382l-.363-.216-3.675.934.98-3.571-.236-.376A9.955 9.955 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10Zm5.472-7.332c-.3-.15-1.767-.872-2.04-.97-.273-.1-.472-.15-.67.15-.2.3-.773.97-.946 1.17-.173.2-.346.22-.646.07-.3-.15-1.267-.466-2.415-1.487-.892-.794-1.495-1.775-1.67-2.075-.173-.3-.018-.462.13-.61.132-.133.3-.347.45-.52.15-.173.2-.3.3-.498.1-.2.05-.373-.025-.522-.075-.15-.67-1.612-.92-2.207-.242-.578-.487-.5-.67-.51-.173-.008-.373-.01-.572-.01-.2 0-.52.074-.792.373-.273.3-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.15.2 2.096 3.2 5.077 4.487.71.307 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.29.173-1.414-.074-.124-.272-.2-.572-.347Z"/>
+            </svg>
+          </span>
+          <span
+            className="text-[10px] font-bold text-amber-300"
+            style={{ animation: "promoArrow 1s ease-in-out infinite" }}
+          >
+            ↑ Tocá
+          </span>
+        </span>
+      </span>
+
+      {/* Keyframes inline */}
+      <style>{`
+        @keyframes promoBar {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.4; }
+        }
+        @keyframes promoDot {
+          0%, 100% { transform: scale(1); opacity: 1; }
+          50% { transform: scale(1.6); opacity: 0.6; }
+        }
+        @keyframes promoArrow {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-3px); }
+        }
+      `}</style>
+    </a>
+  );
+}
+
 function QtyRow({
   tt,
   qty,
@@ -432,6 +510,11 @@ export function PublicTicketeraClient({
             </div>
           </div>
         </div>
+
+        {/* Banner promo WhatsApp — solo si hay número configurado y entradas disponibles */}
+        {event.promo_whatsapp && ticket_types.some((t) => t.available_qty > 0) && (
+          <PromoBanner whatsapp={event.promo_whatsapp} eventName={event.name} />
+        )}
 
         {/* Tickets */}
         <div className="surface-glass px-4 py-5 sm:px-6">

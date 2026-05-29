@@ -17,6 +17,7 @@ export interface EventEditInitial {
   cover_image_url: string | null;
   catalog_flair: string | null;
   starts_at: string | null;
+  promo_whatsapp: string | null;
 }
 
 function isoToDatetimeLocal(iso: string | null): string {
@@ -70,6 +71,7 @@ export function EventEditForm({ eventId, initial }: EventEditFormProps) {
   const [startsAt, setStartsAt] = useState(isoToDatetimeLocal(initial.starts_at));
   const [description, setDescription] = useState(initial.description ?? "");
   const [coverImageUrl, setCoverImageUrl] = useState(initial.cover_image_url ?? "");
+  const [promoWhatsapp, setPromoWhatsapp] = useState(initial.promo_whatsapp ?? "");
 
   function goStep2() {
     setError(null);
@@ -91,6 +93,7 @@ export function EventEditForm({ eventId, initial }: EventEditFormProps) {
     fd.set("description", description.trim());
     fd.set("cover_image_url", coverImageUrl.trim());
     fd.set("catalog_flair", (initial.catalog_flair ?? "").trim());
+    fd.set("promo_whatsapp", promoWhatsapp.replace(/\D/g, ""));
 
     startTransition(async () => {
       const res = await updateEventDetails(fd);
@@ -147,6 +150,29 @@ export function EventEditForm({ eventId, initial }: EventEditFormProps) {
               />
             </label>
             <EventCoverUploadField imageUrl={coverImageUrl} onImageUrlChange={setCoverImageUrl} disabled={pending} />
+
+            <label className="grid gap-2 text-sm text-white/90">
+              <span className="flex items-center gap-2">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden className="text-emerald-400">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.92 12a19.79 19.79 0 0 1-3-8.57A2 2 0 0 1 3.92 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                WhatsApp de promo
+                <span className="text-white/40 font-normal">(opcional)</span>
+              </span>
+              <input
+                className="input-design"
+                type="tel"
+                inputMode="tel"
+                value={promoWhatsapp}
+                onChange={(e) => setPromoWhatsapp(e.target.value)}
+                placeholder="Ej: 5491122334455 (con código de país)"
+                disabled={pending}
+              />
+              <span className="text-xs text-white/40">
+                Si lo cargás, aparece un botón animado en la ticketera pública para que la gente te escriba y consulte por la promo.
+              </span>
+            </label>
+
             <button type="button" className="btn-cta-primary mt-2 w-full justify-center" onClick={goStep2} disabled={pending}>
               Continuar al paso 2
             </button>

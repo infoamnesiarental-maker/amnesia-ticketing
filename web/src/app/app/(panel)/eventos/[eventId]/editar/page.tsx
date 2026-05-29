@@ -25,7 +25,7 @@ export default async function EditarEventoPage(props: { params: Promise<{ eventI
 
   const { data: event, error } = await supabase
     .from("events")
-    .select("id, organization_id, name, slug, place, description, cover_image_url, catalog_flair, starts_at")
+    .select("id, organization_id, name, slug, place, description, cover_image_url, catalog_flair, starts_at, promo_whatsapp")
     .eq("id", eventId)
     .maybeSingle();
 
@@ -56,6 +56,10 @@ export default async function EditarEventoPage(props: { params: Promise<{ eventI
               ? null
               : String(event.catalog_flair),
           starts_at: event.starts_at == null ? null : String(event.starts_at),
+          promo_whatsapp:
+            event.promo_whatsapp == null || String(event.promo_whatsapp).trim() === ""
+              ? null
+              : String(event.promo_whatsapp),
         }}
       />
     </div>

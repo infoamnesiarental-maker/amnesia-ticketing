@@ -11,6 +11,8 @@ export interface TicketeraEvent {
   starts_at: string | null;
   mp_alias: string;
   cover_image_url: string | null;
+  /** Número de WhatsApp para botón de promo (solo dígitos con código de país). Null = no mostrar. */
+  promo_whatsapp: string | null;
 }
 
 export interface TicketeraTicketType {
@@ -55,6 +57,10 @@ export function parseTicketeraContext(data: unknown): TicketeraContext | null {
       ev.cover_image_url == null || String(ev.cover_image_url).trim() === ""
         ? null
         : String(ev.cover_image_url),
+    promo_whatsapp:
+      ev.promo_whatsapp == null || String(ev.promo_whatsapp).trim() === ""
+        ? null
+        : String(ev.promo_whatsapp).replace(/\D/g, ""),
   };
   if (!organization.slug || !event.id || !event.mp_alias) return null;
 

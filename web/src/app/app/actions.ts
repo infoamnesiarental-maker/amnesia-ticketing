@@ -366,6 +366,7 @@ export async function updateEventDetails(formData: FormData): Promise<ActionResu
   const description = String(formData.get("description") || "").trim() || null;
   const cover_image_url = String(formData.get("cover_image_url") || "").trim() || null;
   const catalog_flair = String(formData.get("catalog_flair") || "").trim().slice(0, 48) || null;
+  const promo_whatsapp = String(formData.get("promo_whatsapp") || "").replace(/\D/g, "").slice(0, 20) || null;
   const startsAtRaw = String(formData.get("starts_at") || "").trim();
   let starts_at: string | null = null;
   if (startsAtRaw) {
@@ -382,6 +383,7 @@ export async function updateEventDetails(formData: FormData): Promise<ActionResu
       cover_image_url,
       catalog_flair,
       starts_at,
+      promo_whatsapp,
       updated_at: new Date().toISOString(),
     })
     .eq("id", eventId);
