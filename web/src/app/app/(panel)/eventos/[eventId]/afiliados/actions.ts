@@ -4,21 +4,12 @@ import { revalidatePath } from "next/cache";
 
 import { createSupabaseServiceRoleClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { nameToCode } from "./utils";
 
 export type AffiliateActionResult = { ok: true; message: string } | { error: string };
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const CODE_RE = /^[A-Z0-9_-]{1,32}$/;
-
-/** Normaliza un nombre libre a código: mayúsculas, sin acentos, solo alfanumérico. */
-export function nameToCode(name: string): string {
-  return name
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toUpperCase()
-    .replace(/[^A-Z0-9]/g, "")
-    .slice(0, 16);
-}
 
 async function getCallerOrgId(): Promise<{ orgId: string; userId: string } | { error: string }> {
   const supabase = await createSupabaseServerClient();

@@ -3,7 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 
-import { createAffiliateCode, deleteAffiliateCode, toggleAffiliateCode, nameToCode } from "./actions";
+import { createAffiliateCode, deleteAffiliateCode, toggleAffiliateCode } from "./actions";
+import { nameToCode } from "./utils";
 
 const money = new Intl.NumberFormat("es-AR", {
   style: "currency",
