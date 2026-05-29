@@ -204,6 +204,7 @@ export async function submitPublicOrder(formData: FormData): Promise<PublicOrder
   if (totalArs <= 0) return err("Monto total inválido.");
 
   const email = String(formData.get("buyer_email") || "").trim().toLowerCase();
+  const affiliateCodeRaw = String(formData.get("affiliate_code") || "").trim().toUpperCase().slice(0, 32) || null;
 
   // Parsear los asistentes (1 por entrada). El primero es el comprador.
   const attendeesRaw = String(formData.get("attendees_json") || "");
@@ -261,6 +262,7 @@ export async function submitPublicOrder(formData: FormData): Promise<PublicOrder
     proof_object_path: objectPath,
     proof_sha256: proofSha256,
     status: "pending_validation",
+    affiliate_code: affiliateCodeRaw,
   });
 
   if (ordErr) {

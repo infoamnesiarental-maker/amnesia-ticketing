@@ -124,7 +124,7 @@ export default async function EventosPage() {
                 </div>
 
                 {/* Acciones principales — botones táctiles grandes */}
-                <div className="grid grid-cols-2 border-t border-white/8">
+                <div className="grid grid-cols-3 border-t border-white/8">
                   <Link
                     href={`/app/eventos/${id}/venta-manual`}
                     className="flex flex-col items-center gap-1 border-r border-white/8 py-3.5 text-center text-xs font-semibold text-amber-200 transition hover:bg-amber-500/10 active:bg-amber-500/15"
@@ -136,7 +136,7 @@ export default async function EventosPage() {
                   </Link>
                   <Link
                     href={`/app/eventos/${id}/invitados`}
-                    className="flex flex-col items-center gap-1 py-3.5 text-center text-xs font-semibold text-emerald-200 transition hover:bg-emerald-500/10 active:bg-emerald-500/15"
+                    className="flex flex-col items-center gap-1 border-r border-white/8 py-3.5 text-center text-xs font-semibold text-emerald-200 transition hover:bg-emerald-500/10 active:bg-emerald-500/15"
                   >
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
                       <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
@@ -144,6 +144,15 @@ export default async function EventosPage() {
                       <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
                     </svg>
                     Invitados
+                  </Link>
+                  <Link
+                    href={`/app/eventos/${id}/afiliados`}
+                    className="flex flex-col items-center gap-1 py-3.5 text-center text-xs font-semibold text-violet-300 transition hover:bg-violet-500/10 active:bg-violet-500/15"
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
+                      <path d="M10 13.5 14 9.5M8 7.5l-2 2a3 3 0 0 0 4.24 4.24l1.26-1.26M16 16.5l2-2a3 3 0 0 0-4.24-4.24L12.5 11.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                    </svg>
+                    Afiliados
                   </Link>
                 </div>
 

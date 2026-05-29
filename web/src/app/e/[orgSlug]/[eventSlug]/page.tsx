@@ -70,6 +70,10 @@ export default async function PublicTicketeraPage(props: {
   const hasPurchaseFlow = !thanks && ctx.ticket_types.length > 0;
   const eventStartsAtLabel = formatEventStartsAt(ctx.event.starts_at);
 
+  // Código de afiliado: viene de ?ref= en la URL — lo pasamos al cliente
+  const refRaw = sp.ref;
+  const affiliateRef = typeof refRaw === "string" && refRaw.trim() ? refRaw.trim().toUpperCase().slice(0, 32) : null;
+
   return (
     <div className="min-h-screen bg-[#0A0A0A]">
       <SiteHeader variant="solid" />
@@ -92,6 +96,7 @@ export default async function PublicTicketeraPage(props: {
                 thanks={thanks}
                 layoutSplit
                 eventStartsAtLabel={eventStartsAtLabel}
+                affiliateRef={affiliateRef}
               />
             </div>
           </div>
@@ -99,7 +104,7 @@ export default async function PublicTicketeraPage(props: {
           <>
             <PublicTicketeraHero context={ctx} eventStartsAtLabel={eventStartsAtLabel} />
             <div className="mt-10">
-              <PublicTicketeraClient context={ctx} thanks={thanks} eventStartsAtLabel={eventStartsAtLabel} />
+              <PublicTicketeraClient context={ctx} thanks={thanks} eventStartsAtLabel={eventStartsAtLabel} affiliateRef={affiliateRef} />
             </div>
           </>
         )}

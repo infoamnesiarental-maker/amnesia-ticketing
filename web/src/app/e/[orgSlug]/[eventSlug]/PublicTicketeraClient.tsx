@@ -225,16 +225,21 @@ export function PublicTicketeraFlyer({
   );
 }
 
+const AFF_SESSION_KEY = "aff_ref";
+
 export function PublicTicketeraClient({
   context,
   thanks,
   layoutSplit = false,
   eventStartsAtLabel,
+  affiliateRef,
 }: {
   context: TicketeraContext;
   thanks: boolean;
   layoutSplit?: boolean;
   eventStartsAtLabel: string;
+  /** Código de afiliado desde ?ref= — se persiste en sessionStorage para el submit. */
+  affiliateRef?: string | null;
 }) {
   const { organization, event, ticket_types } = context;
   const [step, setStep] = useState<0 | 1 | 2>(0);
@@ -245,6 +250,17 @@ export function PublicTicketeraClient({
   const [email, setEmail] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+
+  // Persistir el ref en sessionStorage al cargar (para que sobreviva a navegación en el mismo tab)
+  useEffect(() => {
+    try {
+      if (affiliateRef) {
+        sessionStorage.setItem(AFF_SESSION_KEY, affiliateRef);
+      }
+    } catch {
+      // sessionStorage puede no estar disponible (modo privado muy restrictivo)
+    }
+  }, [affiliateRef]);
 
   const totals = useMemo(() => {
     let qty = 0;
@@ -327,6 +343,15 @@ export function PublicTicketeraClient({
       .filter(Boolean) as { ticket_type_id: string; qty: number }[];
     fd.set("lines_json", JSON.stringify(lines));
     fd.set("buyer_email", email);
+
+    // Incluir código de afiliado si existe (desde URL o sessionStorage)
+    try {
+      const ref = affiliateRef || sessionStorage.getItem(AFF_SESSION_KEY) || "";
+      if (ref) fd.set("affiliate_code", ref.toUpperCase().slice(0, 32));
+    } catch {
+      // ignorar si sessionStorage no está disponible
+    }
+
     fd.set(
       "attendees_json",
       JSON.stringify(
