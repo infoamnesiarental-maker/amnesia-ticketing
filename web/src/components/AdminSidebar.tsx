@@ -78,6 +78,7 @@ function IconUser() {
   );
 }
 
+
 const NAV: Array<{ href: string; label: string; hint: string; icon: ReactNode }> = [
   { href: "/admin", label: "Resumen", hint: "Métricas y alertas", icon: <IconLayout /> },
   { href: "/admin/productoras", label: "Productoras", hint: "Altas y estados", icon: <IconBuilding /> },

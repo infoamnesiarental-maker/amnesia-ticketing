@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { SiteHeader } from "@/components/SiteHeader";
 import { createSupabaseServiceRoleClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { formatEventStartsAt } from "@/lib/format-datetime";
 import { parseTicketeraContext, type TicketeraContext } from "@/lib/ticketera";
 
 import { PublicTicketeraClient, PublicTicketeraFlyer, PublicTicketeraHero } from "./PublicTicketeraClient";
@@ -67,40 +68,41 @@ export default async function PublicTicketeraPage(props: {
   }
 
   const hasPurchaseFlow = !thanks && ctx.ticket_types.length > 0;
+  const eventStartsAtLabel = formatEventStartsAt(ctx.event.starts_at);
 
   return (
     <div className="min-h-screen bg-[#0A0A0A]">
       <SiteHeader variant="solid" />
       <main className="section-padding-x mx-auto max-w-content pb-24 pt-24 sm:pt-28">
         {hasPurchaseFlow ? (
-          <div className="grid items-start justify-items-center gap-8 lg:grid-cols-[minmax(0,320px)_minmax(0,1fr)] lg:justify-items-stretch lg:gap-10 xl:grid-cols-[minmax(0,380px)_minmax(0,1fr)]">
-            <PublicTicketeraFlyer context={ctx} />
-            <div className="min-w-0 space-y-8">
+          <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,320px)_minmax(0,1fr)] lg:gap-10 xl:grid-cols-[minmax(0,380px)_minmax(0,1fr)]">
+            {/* Flyer: solo visible en desktop. En mobile lo muestra el cliente en el paso 0. */}
+            <div className="hidden lg:block">
+              <PublicTicketeraFlyer context={ctx} eventStartsAtLabel={eventStartsAtLabel} />
+            </div>
+            <div className="min-w-0">
               <header className="hidden border-b border-white/10 pb-5 lg:block">
                 <p className="text-xs font-semibold uppercase tracking-wider text-brand">Ticketera</p>
                 <p className="mt-1 text-sm text-white/60">
                   {ctx.organization.name} · <span className="font-mono text-white/45">{ctx.organization.slug}</span>
                 </p>
               </header>
-              <div className="border-b border-white/10 pb-6 text-center lg:hidden lg:text-left">
-                <p className="text-xs font-semibold uppercase tracking-wider text-brand">Ticketera</p>
-                <h2 className="mt-2 text-lg font-semibold text-white">Completá tu compra</h2>
-                <p className="mt-1 text-sm text-white/60">{ctx.organization.name}</p>
-              </div>
-              <PublicTicketeraClient context={ctx} thanks={thanks} layoutSplit />
+              <PublicTicketeraClient
+                context={ctx}
+                thanks={thanks}
+                layoutSplit
+                eventStartsAtLabel={eventStartsAtLabel}
+              />
             </div>
           </div>
         ) : (
           <>
-            <PublicTicketeraHero context={ctx} />
+            <PublicTicketeraHero context={ctx} eventStartsAtLabel={eventStartsAtLabel} />
             <div className="mt-10">
-              <PublicTicketeraClient context={ctx} thanks={thanks} />
+              <PublicTicketeraClient context={ctx} thanks={thanks} eventStartsAtLabel={eventStartsAtLabel} />
             </div>
           </>
         )}
-        <div className="mt-12 flex flex-col items-center gap-3 text-center text-xs text-white/40">
-          <p>Al comprar aceptás que procesemos tus datos para validar el pago y emitir entradas.</p>
-        </div>
       </main>
     </div>
   );

@@ -57,13 +57,11 @@ function validateBuyer(
   first: string,
   last: string,
   dni: string,
-  phone: string,
   email: string,
 ): string | null {
   if (first.length < 1 || first.length > 80) return "Nombre inválido.";
   if (last.length < 1 || last.length > 80) return "Apellido inválido.";
   if (dni.length < 4 || dni.length > 32) return "DNI inválido.";
-  if (phone.length < 6 || phone.length > 40) return "Teléfono inválido.";
   if (email.length < 3 || email.length > 120 || !email.includes("@")) return "Email inválido.";
   return null;
 }
@@ -101,10 +99,7 @@ function parseAttendees(raw: string, expectedQty: number): AttendeeInput[] | { e
     if (first.length < 1 || first.length > 80) return { error: `Asistente ${i + 1}: nombre inválido.` };
     if (last.length < 1 || last.length > 80) return { error: `Asistente ${i + 1}: apellido inválido.` };
     if (dni.length < 4 || dni.length > 32) return { error: `Asistente ${i + 1}: DNI inválido.` };
-    if (isBuyer && (phone.length < 6 || phone.length > 40)) {
-      return { error: `Asistente ${i + 1} (comprador): teléfono inválido.` };
-    }
-    if (!isBuyer && phone && (phone.length < 6 || phone.length > 40)) {
+    if (phone && (phone.length < 6 || phone.length > 40)) {
       return { error: `Asistente ${i + 1}: teléfono inválido (dejá vacío si no lo tenés).` };
     }
     const dniKey = dni.toLowerCase();
@@ -221,7 +216,6 @@ export async function submitPublicOrder(formData: FormData): Promise<PublicOrder
     buyer.first_name,
     buyer.last_name,
     buyer.dni,
-    buyer.phone ?? "",
     email,
   );
   if (buyerErr) return err(buyerErr);
@@ -229,7 +223,6 @@ export async function submitPublicOrder(formData: FormData): Promise<PublicOrder
   const first = buyer.first_name;
   const last = buyer.last_name;
   const dni = buyer.dni;
-  const phone = buyer.phone ?? "";
 
   const file = formData.get("proof");
   if (!file || typeof file === "string" || file.size < 1) return err("Subí una imagen del comprobante.");
@@ -261,7 +254,7 @@ export async function submitPublicOrder(formData: FormData): Promise<PublicOrder
     buyer_first_name: first,
     buyer_last_name: last,
     buyer_dni: dni,
-    buyer_phone: phone,
+    buyer_phone: buyer.phone ?? "",
     buyer_email: email,
     total_qty: totalQty,
     total_ars: totalArs,
@@ -329,4 +322,195 @@ export async function submitPublicOrder(formData: FormData): Promise<PublicOrder
     ok: true,
     next: `/o/${orderId}`,
   };
+}
+
+export async function submitBenefitCampaignOrder(formData: FormData): Promise<PublicOrderResult> {
+  const admin = createSupabaseServiceRoleClient();
+  if (!admin) {
+    return err(
+      "El servidor no tiene SUPABASE_SERVICE_ROLE_KEY: no se puede subir el comprobante ni crear la orden de forma segura.",
+    );
+  }
+
+  const orgSlug = String(formData.get("org_slug") || "").trim();
+  const eventSlug = String(formData.get("event_slug") || "").trim();
+  const campaignToken = String(formData.get("campaign_token") || "").trim();
+  const benefitCode = String(formData.get("benefit_code") || "").trim().toUpperCase();
+  if (!orgSlug || !eventSlug || !campaignToken || !benefitCode) return err("Datos de beneficio incompletos.");
+
+  const ctx = await loadTicketera(orgSlug, eventSlug);
+  if (!ctx) return err("Evento no disponible o la productora no está aprobada.");
+
+  const { data: campaign, error: campaignErr } = await admin
+    .from("benefit_campaigns")
+    .select("id, event_id, ticket_type_id, discounted_price_ars, status, expires_at")
+    .eq("token", campaignToken)
+    .maybeSingle();
+
+  if (campaignErr || !campaign) {
+    if (campaignErr && /relation .*benefit_campaigns.* does not exist|undefined_table/i.test(campaignErr.message)) {
+      return err("Falta la tabla de campañas de beneficio. Ejecutá supabase/benefit-campaigns.sql en SQL Editor.");
+    }
+    return err("Campaña de beneficio inválida.");
+  }
+
+  if (String(campaign.event_id) !== ctx.event.id) return err("Esta campaña no corresponde a este evento.");
+  if (String(campaign.status) !== "active") return err("Esta campaña de beneficio no está activa.");
+  if (campaign.expires_at && new Date(String(campaign.expires_at)).getTime() < Date.now()) {
+    return err("Esta campaña de beneficio venció.");
+  }
+
+  const ticketType = ctx.ticket_types.find((tt) => tt.id === String(campaign.ticket_type_id));
+  if (!ticketType) return err("El tipo de entrada de esta campaña ya no existe.");
+  if (ticketType.available_qty < 1) return err("No hay stock disponible para esta entrada.");
+
+  const { data: codeRow, error: codeErr } = await admin
+    .from("benefit_campaign_codes")
+    .select("id, status, campaign_id, used_order_id")
+    .eq("campaign_id", String(campaign.id))
+    .eq("code", benefitCode)
+    .maybeSingle();
+
+  if (codeErr || !codeRow) {
+    if (codeErr && /relation .*benefit_campaign_codes.* does not exist|undefined_table/i.test(codeErr.message)) {
+      return err("Falta la tabla de códigos de beneficio. Ejecutá supabase/benefit-campaigns.sql en SQL Editor.");
+    }
+    return err("Código de beneficio inválido.");
+  }
+  if (String(codeRow.status) !== "pending" || codeRow.used_order_id) return err("Este código ya fue usado.");
+
+  const unitPrice = roundMoney(Number(campaign.discounted_price_ars));
+  if (!Number.isFinite(unitPrice) || unitPrice <= 0) return err("Precio de beneficio inválido.");
+
+  const email = String(formData.get("buyer_email") || "").trim().toLowerCase();
+  const attendeesRaw = String(formData.get("attendees_json") || "");
+  const attendeesParsed = parseAttendees(attendeesRaw, 1);
+  if ("error" in attendeesParsed) return err(attendeesParsed.error);
+
+  const attendees = attendeesParsed;
+  const buyer = attendees[0];
+  const buyerErr = validateBuyer(
+    buyer.first_name,
+    buyer.last_name,
+    buyer.dni,
+    email,
+  );
+  if (buyerErr) return err(buyerErr);
+
+  const file = formData.get("proof");
+  if (!file || typeof file === "string" || file.size < 1) return err("Subí una imagen del comprobante.");
+  if (file.size > MAX_BYTES) {
+    const mb = (MAX_BYTES / (1024 * 1024)).toFixed(0);
+    return err(`El comprobante es demasiado pesado. Máximo ${mb} MB.`);
+  }
+  const mime = file.type || "application/octet-stream";
+  if (!ALLOWED_MIME.has(mime)) return err("Formato no permitido: usá JPG, PNG o WebP.");
+
+  const orderId = crypto.randomUUID();
+  const ext = extFromMime(mime);
+  const objectPath = `${ctx.event.id}/${orderId}/comprobante.${ext}`;
+  const buf = Buffer.from(await file.arrayBuffer());
+  const proofSha256 = sha256Hex(buf);
+
+  const { error: upErr } = await admin.storage.from("proofs").upload(objectPath, buf, {
+    contentType: mime,
+    upsert: false,
+  });
+  if (upErr) return err(`No se pudo subir el comprobante: ${upErr.message}`);
+
+  const { error: ordErr } = await admin.from("orders").insert({
+    id: orderId,
+    event_id: ctx.event.id,
+    buyer_first_name: buyer.first_name,
+    buyer_last_name: buyer.last_name,
+    buyer_dni: buyer.dni,
+    buyer_phone: buyer.phone ?? "",
+    buyer_email: email,
+    total_qty: 1,
+    total_ars: unitPrice,
+    proof_object_path: objectPath,
+    proof_sha256: proofSha256,
+    status: "pending_validation",
+  });
+
+  if (ordErr) {
+    await admin.storage.from("proofs").remove([objectPath]);
+    if (ordErr.code === "23505" && /proof_sha256|orders_proof_sha256/i.test(ordErr.message ?? "")) {
+      return err("Ese comprobante ya fue usado en otro pedido. Subí una captura nueva del pago.");
+    }
+    return err(ordErr.message);
+  }
+
+  const { error: itemErr } = await admin.from("order_items").insert({
+    order_id: orderId,
+    ticket_type_id: ticketType.id,
+    qty: 1,
+    unit_price_ars: unitPrice,
+  });
+  if (itemErr) {
+    await admin.from("orders").delete().eq("id", orderId);
+    await admin.storage.from("proofs").remove([objectPath]);
+    return err(itemErr.message);
+  }
+
+  const { error: attErr } = await admin.from("attendees").insert({
+    order_id: orderId,
+    position: 1,
+    first_name: buyer.first_name,
+    last_name: buyer.last_name,
+    dni: buyer.dni,
+    phone: buyer.phone,
+    is_buyer: true,
+  });
+  if (attErr) {
+    await admin.from("order_items").delete().eq("order_id", orderId);
+    await admin.from("orders").delete().eq("id", orderId);
+    await admin.storage.from("proofs").remove([objectPath]);
+    if (/relation .*attendees.* does not exist|undefined_table/i.test(attErr.message)) {
+      return err(
+        "Falta la tabla attendees en la base. Ejecutá supabase/attendees-per-ticket.sql en el SQL Editor.",
+      );
+    }
+    return err(`No se pudieron guardar los datos del asistente: ${attErr.message}`);
+  }
+
+  const { data: usedRows, error: useErr } = await admin
+    .from("benefit_campaign_codes")
+    .update({
+      status: "used",
+      used_order_id: orderId,
+      used_at: new Date().toISOString(),
+    })
+    .eq("id", String(codeRow.id))
+    .eq("status", "pending")
+    .is("used_order_id", null)
+    .select("id");
+
+  if (useErr || !usedRows || usedRows.length === 0) {
+    await admin.from("attendees").delete().eq("order_id", orderId);
+    await admin.from("order_items").delete().eq("order_id", orderId);
+    await admin.from("orders").delete().eq("id", orderId);
+    await admin.storage.from("proofs").remove([objectPath]);
+    return err("Este código de beneficio ya fue utilizado por otra persona.");
+  }
+
+  void triggerAutomationWebhook({
+    order_id: orderId,
+    event_id: ctx.event.id,
+    total_ars: unitPrice,
+    buyer_email: email,
+    benefit_campaign_id: String(campaign.id),
+    benefit_code_id: String(codeRow.id),
+    sent_at: new Date().toISOString(),
+  });
+
+  return {
+    ok: true,
+    next: `/o/${orderId}`,
+  };
+}
+
+// Compatibilidad temporal con el flujo anterior (link de 1 uso).
+export async function submitBenefitOrder(formData: FormData): Promise<PublicOrderResult> {
+  return submitBenefitCampaignOrder(formData);
 }

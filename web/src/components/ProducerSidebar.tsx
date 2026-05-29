@@ -87,6 +87,19 @@ function IconUser() {
   );
 }
 
+function IconLink() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M10 13.5 14 9.5M8 7.5l-2 2a3 3 0 0 0 4.24 4.24l1.26-1.26M16 16.5l2-2a3 3 0 0 0-4.24-4.24L12.5 11.5"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
 function NavItem({
   href,
   label,
@@ -205,6 +218,12 @@ export function ProducerSidebar({
               label="Puerta"
               description="Escanear QR y validar ingreso"
               icon={<IconScan />}
+            />
+            <NavItem
+              href="/app/beneficios"
+              label="Beneficios"
+              description="Campañas y códigos únicos"
+              icon={<IconLink />}
             />
             <p className="mb-1 mt-5 text-[11px] font-semibold uppercase tracking-[0.2em] text-white/35">
               Configuración

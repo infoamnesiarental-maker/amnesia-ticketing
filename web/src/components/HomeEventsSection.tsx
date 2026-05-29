@@ -3,12 +3,6 @@ import Link from "next/link";
 
 import type { PublicEventListItem } from "@/lib/public-events-catalog";
 
-const ars = new Intl.NumberFormat("es-AR", {
-  style: "currency",
-  currency: "ARS",
-  maximumFractionDigits: 0,
-});
-
 const TZ = "America/Argentina/Buenos_Aires";
 
 function getScheduleParts(iso: string | null) {
@@ -64,6 +58,21 @@ function IconTicket({ className }: { className?: string }) {
         strokeWidth="1.6"
         strokeLinecap="round"
       />
+    </svg>
+  );
+}
+
+function IconPerson({ className }: { className?: string }) {
+  return (
+    <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M12 12a3.25 3.25 0 1 0-3.25-3.25A3.25 3.25 0 0 0 12 12Zm0 2c-3.2 0-5.75 1.76-5.75 4v.5h11.5V18c0-2.24-2.55-4-5.75-4Z"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.6" />
     </svg>
   );
 }
@@ -146,16 +155,17 @@ export function HomeEventsSection({ events, catalogError }: HomeEventsSectionPro
             {events.map((ev) => {
               const schedule = getScheduleParts(ev.starts_at);
               const lowStock = ev.tickets_available > 0 && ev.tickets_available <= 35;
-              const showRange =
-                ev.to_price_ars != null &&
-                Number.isFinite(ev.to_price_ars) &&
-                Math.abs(ev.to_price_ars - ev.from_price_ars) >= 0.01;
 
               return (
                 <li key={`${ev.org_slug}/${ev.event_slug}`} className="group">
-                  <div className="relative h-full rounded-2xl p-[1px] transition duration-500 group-hover:bg-gradient-to-br group-hover:from-[var(--brand-orange)]/55 group-hover:via-white/20 group-hover:to-transparent">
-                    <article className="flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#0c0c0c] shadow-[0_24px_60px_-20px_rgba(0,0,0,0.85)] transition duration-300 group-hover:border-white/15 group-hover:shadow-[0_28px_70px_-18px_rgba(255,87,34,0.18)]">
-                      <div className="relative aspect-[16/10] shrink-0 bg-gradient-to-br from-zinc-800 to-zinc-950">
+                  <Link
+                    href={ticketeraHref(ev)}
+                    className="block h-full rounded-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--brand-orange)]"
+                    aria-label={`Ver entradas de ${ev.event_name}`}
+                  >
+                    <div className="relative h-full overflow-hidden rounded-2xl p-[1px] transition duration-500 group-hover:bg-gradient-to-br group-hover:from-[var(--brand-orange)]/55 group-hover:via-white/20 group-hover:to-transparent">
+                      <article className="flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#0c0c0c] shadow-[0_24px_60px_-20px_rgba(0,0,0,0.85)] transition duration-300 group-hover:border-white/15 group-hover:shadow-[0_28px_70px_-18px_rgba(255,87,34,0.18)]">
+                      <div className="relative aspect-[16/10] shrink-0 overflow-hidden bg-gradient-to-br from-zinc-800 to-zinc-950">
                         {ev.cover_image_url ? (
                           <Image
                             src={ev.cover_image_url}
@@ -216,17 +226,6 @@ export function HomeEventsSection({ events, catalogError }: HomeEventsSectionPro
                       </div>
 
                       <div className="flex flex-1 flex-col gap-4 p-5">
-                        <div>
-                          <h3 className="text-lg font-bold leading-snug text-white transition group-hover:text-brand">
-                            {ev.event_name}
-                          </h3>
-                          {ev.description_preview ? (
-                            <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-white/55">
-                              {ev.description_preview}
-                            </p>
-                          ) : null}
-                        </div>
-
                         <div className="grid gap-2.5 text-sm text-white/75">
                           <div className="flex items-start gap-2.5">
                             <span className="mt-0.5 shrink-0 text-brand">
@@ -254,47 +253,25 @@ export function HomeEventsSection({ events, catalogError }: HomeEventsSectionPro
                           </div>
                           <div className="flex items-start gap-2.5">
                             <span className="mt-0.5 shrink-0 text-brand">
-                              <IconTicket className="opacity-90" />
+                              <IconPerson className="opacity-90" />
                             </span>
                             <div>
-                              <p className="text-[11px] font-semibold uppercase tracking-wide text-white/40">Cupos</p>
-                              <p className="text-white/90">
-                                {ev.tickets_available > 0
-                                  ? `${ev.tickets_available.toLocaleString("es-AR")} entradas en esta venta`
-                                  : "Consultá disponibilidad en la ticketera"}
-                              </p>
+                              <p className="text-[11px] font-semibold uppercase tracking-wide text-white/40">Productora</p>
+                              <p className="text-white/90">{ev.org_name}</p>
                             </div>
                           </div>
                         </div>
 
-                        <div className="mt-auto space-y-1 rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3">
-                          <p className="text-[11px] font-semibold uppercase tracking-wide text-white/45">
-                            {showRange ? "Precios" : "Precio desde"}
-                          </p>
-                          <p className="text-xl font-black tracking-tight text-white">
-                            {showRange ? (
-                              <>
-                                <span className="text-brand">Desde {ars.format(ev.from_price_ars)}</span>
-                                <span className="text-base font-bold text-white/70"> · hasta {ars.format(ev.to_price_ars!)}</span>
-                              </>
-                            ) : (
-                              <span className="text-brand">{ars.format(ev.from_price_ars)}</span>
-                            )}
-                          </p>
-                        </div>
-
-                        <Link
-                          href={ticketeraHref(ev)}
-                          className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[var(--brand-orange)] px-4 py-3.5 text-sm font-bold text-white shadow-[var(--shadow-button-hover)] transition hover:bg-[var(--brand-orange-intense)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--brand-orange)]"
-                        >
-                          Comprar entradas
+                        <span className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[var(--brand-orange)] px-4 py-3.5 text-sm font-bold text-white shadow-[var(--shadow-button-hover)] transition group-hover:bg-[var(--brand-orange-intense)]">
+                          Ver entradas
                           <span aria-hidden className="text-base transition group-hover:translate-x-0.5">
                             →
                           </span>
-                        </Link>
+                        </span>
                       </div>
                     </article>
-                  </div>
+                    </div>
+                  </Link>
                 </li>
               );
             })}

@@ -160,6 +160,12 @@ export function AppPanelShell({
                     description="Escanear QR y validar ingreso"
                     onNavigate={() => setMenuOpen(false)}
                   />
+                  <MobileNavItem
+                    href="/app/beneficios"
+                    label="Beneficios"
+                    description="Campañas y códigos únicos"
+                    onNavigate={() => setMenuOpen(false)}
+                  />
 
                   <p className="mt-4 text-[11px] font-semibold uppercase tracking-[0.2em] text-white/35">Configuración</p>
                   <MobileNavItem
