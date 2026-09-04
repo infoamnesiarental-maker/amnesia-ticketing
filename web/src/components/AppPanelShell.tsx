@@ -122,14 +122,14 @@ function MobileNavItem({
     <Link
       href={href}
       onClick={onNavigate}
-      className={`block rounded-xl border px-3 py-3 transition ${
+      className={`block rounded-xl border px-3 py-2.5 transition ${
         active
           ? "border-brand/40 bg-brand/15 text-white"
           : "border-white/10 bg-white/[0.03] text-white/85 hover:bg-white/[0.06]"
       }`}
     >
-      <p className="text-sm font-semibold">{label}</p>
-      <p className="mt-0.5 text-xs text-white/55">{description}</p>
+      <p className="text-sm font-semibold leading-tight">{label}</p>
+      <p className="mt-0.5 text-[11px] leading-snug text-white/50">{description}</p>
     </Link>
   );
 }
@@ -250,7 +250,7 @@ export function AppPanelShell({
                 aria-label="Cerrar"
                 onClick={() => setMenuOpen(false)}
               />
-              <div className="absolute left-0 top-0 h-full w-[min(92vw,22rem)] border-r border-white/10 bg-[#0A0A0A]/95 p-4 pb-24 overflow-y-auto backdrop-blur">
+              <div className="scrollbar-slim absolute left-0 top-0 h-full w-[min(92vw,22rem)] overflow-y-auto border-r border-white/10 bg-[#0A0A0A]/95 p-4 pb-24 backdrop-blur">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <p className="text-xs font-semibold uppercase tracking-[0.22em] text-brand">Panel</p>
@@ -271,8 +271,8 @@ export function AppPanelShell({
                   </button>
                 </div>
 
-                <div className="mt-5 grid gap-2">
-                  <p className="mt-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-white/35">Principal</p>
+                <div className="mt-4 grid gap-1.5">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-white/35">Principal</p>
                   <MobileNavItem
                     href="/app"
                     label="Inicio"
@@ -304,7 +304,7 @@ export function AppPanelShell({
                     onNavigate={() => setMenuOpen(false)}
                   />
 
-                  <p className="mt-4 text-[11px] font-semibold uppercase tracking-[0.2em] text-white/35">Configuración</p>
+                  <p className="mt-3 text-[11px] font-semibold uppercase tracking-[0.2em] text-white/35">Configuración</p>
                   <MobileNavItem
                     href="/app/configuracion/mp"
                     label="Mercado Pago"
@@ -312,7 +312,7 @@ export function AppPanelShell({
                     onNavigate={() => setMenuOpen(false)}
                   />
 
-                  <p className="mt-4 text-[11px] font-semibold uppercase tracking-[0.2em] text-white/35">Cuenta</p>
+                  <p className="mt-3 text-[11px] font-semibold uppercase tracking-[0.2em] text-white/35">Cuenta</p>
                   <MobileNavItem
                     href="/app/perfil"
                     label="Perfil y sesión"
@@ -325,7 +325,7 @@ export function AppPanelShell({
           ) : null}
 
           {/* Page content — extra padding-bottom en mobile para la bottom bar */}
-          <div className="section-padding-x flex min-h-0 flex-1 flex-col pb-24 pt-6 md:pb-10 md:pt-8">
+          <div className="panel-padding-x flex min-h-0 flex-1 flex-col pb-24 pt-5 md:pb-10 md:pt-7">
             {children}
           </div>
 
