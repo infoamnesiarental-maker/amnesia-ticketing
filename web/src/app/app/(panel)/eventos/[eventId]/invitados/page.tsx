@@ -97,7 +97,7 @@ export default async function AdminInvitadosPage({ params, searchParams }: PageP
   if (error) {
     return (
       <main>
-        <h1 className="text-2xl font-bold text-white">Invitados</h1>
+        <h1 className="text-xl font-bold text-white">Invitados</h1>
         <div className="mt-4 rounded-xl border border-red-400/40 bg-red-500/10 p-4 text-sm text-red-200">
           No se pudo cargar la lista. {error.message}
           {error.message.includes("get_event_attendees_admin") || error.message.includes("function") ? (
@@ -163,7 +163,7 @@ export default async function AdminInvitadosPage({ params, searchParams }: PageP
 
       <div className="mt-3 flex flex-col items-center gap-3 text-center sm:flex-row sm:items-end sm:justify-between sm:text-left">
         <div className="min-w-0">
-          <h1 className="text-2xl font-bold text-white">Invitados · {eventName}</h1>
+          <h1 className="text-xl font-bold text-white">Invitados · {eventName}</h1>
           <p className="mt-1 text-sm text-white/65">Lista privada de invitados con DNI completo para control de acceso.</p>
         </div>
         <ExportCsvButton rows={allRows} eventName={eventName} />

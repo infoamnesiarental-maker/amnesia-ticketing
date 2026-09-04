@@ -56,7 +56,7 @@ export default async function VentaManualPage({ params }: { params: Promise<{ ev
 
       {/* Título */}
       <div className="mt-3">
-        <h1 className="text-xl font-bold text-white sm:text-2xl">Venta manual</h1>
+        <h1 className="text-xl font-bold text-white">Venta manual</h1>
         <p className="mt-1 text-sm text-white/55 truncate">
           {eventName}
         </p>

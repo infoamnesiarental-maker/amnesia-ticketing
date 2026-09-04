@@ -291,7 +291,7 @@ export function DoorScannerClient({ events }: { events: DoorEvent[] }) {
     <div className="mx-auto w-full max-w-3xl">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">Puerta · Escáner QR</h1>
+          <h1 className="text-xl font-bold text-white">Puerta · Escáner QR</h1>
           <p className="mt-1 text-sm text-white/65">Seleccioná evento, activá cámara y empezá a validar ingresos.</p>
         </div>
         <div className="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-white/70">

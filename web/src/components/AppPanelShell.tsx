@@ -325,7 +325,7 @@ export function AppPanelShell({
           ) : null}
 
           {/* Page content — extra padding-bottom en mobile para la bottom bar */}
-          <div className="panel-padding-x flex min-h-0 flex-1 flex-col pb-24 pt-5 md:pb-10 md:pt-7">
+          <div className="panel-padding-x panel-ui flex min-h-0 flex-1 flex-col pb-24 pt-5 md:pb-10 md:pt-7">
             {children}
           </div>
 

@@ -64,7 +64,7 @@ export default async function MpConfiguracionPage() {
         <span>Configuración Mercado Pago</span>
       </div>
 
-      <h1 className="mt-3 text-2xl font-bold text-white">Mercado Pago</h1>
+      <h1 className="mt-3 text-xl font-bold text-white">Mercado Pago</h1>
       <p className="mt-2 text-sm text-white/65">
         Cargá el <strong>access token</strong> de Mercado Pago de tu productora. Se usa server-side
         para validar pagos automáticamente. <strong>Nunca</strong> se expone al cliente.

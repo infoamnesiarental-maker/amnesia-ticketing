@@ -283,7 +283,7 @@ export default async function ProducerBenefitsPage(props: {
   return (
     <div className="mx-auto w-full max-w-6xl md:mx-0">
       <div className="text-center md:text-left">
-        <h1 className="text-2xl font-bold text-white">Beneficios por código</h1>
+        <h1 className="text-xl font-bold text-white">Beneficios por código</h1>
         <p className="mt-2 text-sm text-white/65">
           Creá una campaña reutilizable por evento, con precio especial y códigos (PIN) de un solo uso.
         </p>

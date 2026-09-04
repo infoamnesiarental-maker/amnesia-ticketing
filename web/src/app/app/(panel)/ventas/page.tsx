@@ -65,7 +65,7 @@ export default async function VentasPage({ searchParams }: VentasPageProps) {
   if (eventIds.length === 0) {
     return (
       <div className="mx-auto max-w-lg text-center md:mx-0 md:max-w-none md:text-left">
-        <h1 className="text-2xl font-bold text-white">Ventas</h1>
+        <h1 className="text-xl font-bold text-white">Ventas</h1>
         <p className="mt-2 text-sm text-white/65">
           Todavía no tenés eventos. Creá uno para empezar a recibir órdenes.
         </p>

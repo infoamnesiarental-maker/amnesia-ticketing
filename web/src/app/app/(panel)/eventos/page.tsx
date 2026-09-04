@@ -62,7 +62,7 @@ export default async function EventosPage() {
 
       {/* Encabezado */}
       <div className="flex items-center justify-between gap-3">
-        <h1 className="text-xl font-bold text-white sm:text-2xl">Mis eventos</h1>
+        <h1 className="text-xl font-bold text-white">Mis eventos</h1>
         <Link
           href="/app/eventos/nuevo"
           className="btn-cta-primary shrink-0 px-4 py-2 text-sm"

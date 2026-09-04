@@ -13,30 +13,30 @@ function StepIndicator({ step }: { step: 1 | 2 | 3 }) {
   const dot = (n: 1 | 2 | 3) => {
     const active = step === n;
     const done = step > n;
-    return `flex size-10 items-center justify-center rounded-full text-sm font-bold transition ${
+    return `flex size-7 items-center justify-center rounded-full text-[11px] font-bold transition ${
       active
-        ? "bg-[var(--brand-orange)] text-white shadow-[var(--shadow-button-hover)]"
+        ? "bg-[var(--brand-orange)] text-white"
         : done
           ? "bg-white/15 text-white/90"
           : "bg-white/10 text-white/40"
     }`;
   };
-  const bar = (afterStep: 1 | 2) => `h-0.5 w-8 rounded-full sm:w-12 ${step > afterStep ? "bg-[var(--brand-orange)]" : "bg-white/15"}`;
+  const bar = (afterStep: 1 | 2) => `h-px w-6 rounded-full sm:w-8 ${step > afterStep ? "bg-[var(--brand-orange)]" : "bg-white/15"}`;
 
   const subtitle =
     step === 1 ? "Datos del evento y catálogo público" : step === 2 ? "Cobros" : "Primera entrada a la venta";
 
   return (
-    <div className="mb-8 flex flex-col items-center gap-2">
-      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/45">Paso {step} de 3</p>
-      <div className="flex items-center gap-1.5 sm:gap-2">
+    <div className="mb-4 flex flex-col gap-1.5">
+      <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/35">Paso {step} de 3</p>
+      <div className="flex items-center gap-1.5">
         <span className={dot(1)}>1</span>
         <span className={bar(1)} aria-hidden />
         <span className={dot(2)}>2</span>
         <span className={bar(2)} aria-hidden />
         <span className={dot(3)}>3</span>
       </div>
-      <p className="max-w-sm text-center text-xs text-white/50">{subtitle}</p>
+      <p className="text-[12px] text-white/45">{subtitle}</p>
     </div>
   );
 }
@@ -98,18 +98,18 @@ export function CreateEventForm() {
   const entradasHref = createdEventId ? `/app/eventos/${createdEventId}/entradas` : "/app/eventos";
 
   return (
-    <div className="mt-8 w-full">
+    <div className="mt-4 w-full">
       <StepIndicator step={step} />
 
       {step <= 2 ? (
-        <form onSubmit={handleCreateEvent} className="surface-glass mx-auto w-full max-w-lg space-y-5 p-6 sm:p-8">
+        <form onSubmit={handleCreateEvent} className="surface-glass w-full space-y-3.5 p-4">
           {error ? (
-            <div className="rounded-xl border border-red-400/40 bg-red-500/10 px-3 py-2 text-sm text-red-200">{error}</div>
+            <div className="rounded-lg border border-red-400/40 bg-red-500/10 px-3 py-2 text-[13px] text-red-200">{error}</div>
           ) : null}
 
           {step === 1 ? (
             <>
-              <label className="grid gap-2 text-sm text-white/90">
+              <label className="grid gap-1.5 text-[13px] text-white/80">
                 Nombre del evento
                 <input
                   className="input-design"
@@ -120,7 +120,7 @@ export function CreateEventForm() {
                   autoComplete="off"
                 />
               </label>
-              <label className="grid gap-2 text-sm text-white/90">
+              <label className="grid gap-1.5 text-[13px] text-white/80">
                 Lugar (opcional)
                 <input
                   className="input-design"
@@ -130,7 +130,7 @@ export function CreateEventForm() {
                   disabled={pending}
                 />
               </label>
-              <label className="grid gap-2 text-sm text-white/90">
+              <label className="grid gap-1.5 text-[13px] text-white/80">
                 Fecha y hora del evento (opcional)
                 <input
                   className="input-design"
@@ -140,10 +140,10 @@ export function CreateEventForm() {
                   disabled={pending}
                 />
               </label>
-              <label className="grid gap-2 text-sm text-white/90">
+              <label className="grid gap-1.5 text-[13px] text-white/80">
                 Descripción (opcional, se muestra en la home)
                 <textarea
-                  className="input-design min-h-[88px] resize-y"
+                  className="input-design min-h-[72px] resize-y"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Resumen para la tarjeta del catálogo público"
@@ -153,16 +153,16 @@ export function CreateEventForm() {
                 />
               </label>
               <EventCoverUploadField imageUrl={coverImageUrl} onImageUrlChange={setCoverImageUrl} disabled={pending} />
-              <button type="button" className="btn-cta-primary mt-2 w-full justify-center" onClick={goStep2} disabled={pending}>
+              <button type="button" className="btn-cta-primary mt-1 w-full justify-center" onClick={goStep2} disabled={pending}>
                 Continuar al paso 2
               </button>
-              <Link href="/app/eventos" className="block text-center text-sm text-white/55 hover:text-white">
+              <Link href="/app/eventos" className="block text-center text-[13px] text-white/45 hover:text-white">
                 Cancelar
               </Link>
             </>
           ) : (
             <>
-              <div className="rounded-xl border border-white/10 bg-white/[0.04] p-4 text-sm text-white/80">
+              <div className="rounded-lg border border-white/10 bg-white/[0.04] p-3 text-[13px] text-white/80">
                 <p className="text-xs font-semibold uppercase tracking-wide text-white/45">Resumen</p>
                 <p className="mt-2 font-semibold text-white">{name.trim() || "—"}</p>
                 {place.trim() ? <p className="mt-1 text-white/65">{place.trim()}</p> : null}
@@ -173,7 +173,7 @@ export function CreateEventForm() {
                   <p className="mt-1 text-xs text-white/45">Sin tapa (opcional)</p>
                 )}
               </div>
-              <label className="grid gap-2 text-sm text-white/90">
+              <label className="grid gap-1.5 text-[13px] text-white/80">
                 Alias o CVU Mercado Pago
                 <input
                   className="input-design"
@@ -202,8 +202,8 @@ export function CreateEventForm() {
       ) : null}
 
       {step === 3 && createdEventId ? (
-        <div className="mx-auto w-full max-w-lg space-y-4">
-          <div className="rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-center text-sm text-white/75">
+        <div className="w-full space-y-3">
+          <div className="rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2.5 text-[13px] text-white/75">
             <p className="font-medium text-white">{name.trim()}</p>
             <p className="mt-1 text-xs text-white/50">
               Usá el mismo formulario que en “Tipos de entrada”: precio, stock y venta activa. Después podés agregar más

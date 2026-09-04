@@ -275,6 +275,43 @@
     padding-right: clamp(16px, 3vw, 40px);
   }
 
+  /* Escala de las vistas del panel: misma densidad que el menú */
+  .panel-ui h1 {
+    font-size: 1.25rem;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+  }
+
+  .panel-ui h2 {
+    font-size: 0.9375rem;
+    line-height: 1.35;
+  }
+
+  .panel-ui .input-design {
+    height: 36px;
+    font-size: 13px;
+    padding: 0 11px;
+    border-radius: 10px;
+  }
+
+  .panel-ui textarea.input-design {
+    height: auto;
+    min-height: 72px;
+    padding: 8px 11px;
+    line-height: 1.4;
+  }
+
+  .panel-ui .btn-cta-primary,
+  .panel-ui .btn-outline-light {
+    padding: 8px 16px;
+    font-size: 13px;
+    gap: 8px;
+  }
+
+  .panel-ui .surface-glass {
+    border-radius: 14px;
+  }
+
   .animate-fade-up {
     animation: fade-up 0.6s ease-out both;
   }

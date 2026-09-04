@@ -83,7 +83,7 @@ export default async function PanelHomePage() {
     <div className="w-full">
       <header>
         <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-brand">Panel de organizador</p>
-        <h1 className="mt-1.5 truncate text-2xl font-bold text-white md:text-[1.75rem]">Hola, {orgName}</h1>
+        <h1 className="mt-1 truncate text-xl font-bold text-white">Hola, {orgName}</h1>
         <p className="mt-1.5 truncate text-sm text-white/50">{user.email}</p>
       </header>
 

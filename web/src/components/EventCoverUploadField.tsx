@@ -40,11 +40,11 @@ export function EventCoverUploadField({ imageUrl, onImageUrlChange, disabled }: 
   }
 
   return (
-    <div className="grid gap-3">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+    <div className="grid gap-2">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <p className="text-sm font-medium text-white/90">Imagen de tapa</p>
-          <p className="mt-1 text-xs text-white/50">
+          <p className="text-[13px] font-medium text-white/80">Imagen de tapa</p>
+          <p className="mt-0.5 text-[11px] text-white/45">
             JPG, PNG o WebP · máx. {(EVENT_COVER_MAX_BYTES / (1024 * 1024)).toFixed(0)} MB. Se muestra en la home y en la card.
           </p>
         </div>
@@ -52,14 +52,14 @@ export function EventCoverUploadField({ imageUrl, onImageUrlChange, disabled }: 
           <input id={inputId} type="file" accept="image/jpeg,image/png,image/webp" className="sr-only" onChange={onFileChange} disabled={disabled || uploading} />
           <label
             htmlFor={inputId}
-            className="inline-flex cursor-pointer items-center justify-center rounded-full border border-brand/50 bg-brand/15 px-4 py-2 text-sm font-semibold text-brand transition hover:bg-brand/25 disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex cursor-pointer items-center justify-center rounded-full border border-brand/50 bg-brand/15 px-3 py-1.5 text-[13px] font-semibold text-brand transition hover:bg-brand/25 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {uploading ? "Subiendo…" : "Subir imagen"}
           </label>
           {imageUrl ? (
             <button
               type="button"
-              className="rounded-full border border-white/20 px-4 py-2 text-sm text-white/80 transition hover:bg-white/10 disabled:opacity-50"
+              className="rounded-full border border-white/20 px-3 py-1.5 text-[13px] text-white/80 transition hover:bg-white/10 disabled:opacity-50"
               onClick={() => onImageUrlChange("")}
               disabled={disabled || uploading}
             >

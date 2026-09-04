@@ -30,26 +30,26 @@ function isoToDatetimeLocal(iso: string | null): string {
 
 function StepIndicator({ step }: { step: 1 | 2 }) {
   return (
-    <div className="mb-8 flex flex-col items-center gap-2">
-      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/45">Paso {step} de 2</p>
-      <div className="flex items-center gap-2">
+    <div className="mb-4 flex flex-col gap-1.5">
+      <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/35">Paso {step} de 2</p>
+      <div className="flex items-center gap-1.5">
         <span
-          className={`flex size-10 items-center justify-center rounded-full text-sm font-bold transition ${
-            step === 1 ? "bg-[var(--brand-orange)] text-white shadow-[var(--shadow-button-hover)]" : "bg-white/15 text-white/90"
+          className={`flex size-7 items-center justify-center rounded-full text-[11px] font-bold transition ${
+            step === 1 ? "bg-[var(--brand-orange)] text-white" : "bg-white/15 text-white/90"
           }`}
         >
           1
         </span>
-        <span className={`h-0.5 w-12 rounded-full transition sm:w-16 ${step === 2 ? "bg-[var(--brand-orange)]" : "bg-white/15"}`} aria-hidden />
+        <span className={`h-px w-8 rounded-full transition ${step === 2 ? "bg-[var(--brand-orange)]" : "bg-white/15"}`} aria-hidden />
         <span
-          className={`flex size-10 items-center justify-center rounded-full text-sm font-bold transition ${
-            step === 2 ? "bg-[var(--brand-orange)] text-white shadow-[var(--shadow-button-hover)]" : "bg-white/10 text-white/40"
+          className={`flex size-7 items-center justify-center rounded-full text-[11px] font-bold transition ${
+            step === 2 ? "bg-[var(--brand-orange)] text-white" : "bg-white/10 text-white/40"
           }`}
         >
           2
         </span>
       </div>
-      <p className="text-center text-xs text-white/50">
+      <p className="text-[12px] text-white/45">
         {step === 1 ? "Datos visibles en la home" : "Revisá y guardá"}
       </p>
     </div>
@@ -107,27 +107,27 @@ export function EventEditForm({ eventId, initial }: EventEditFormProps) {
   }
 
   return (
-    <div className="mt-8 w-full">
+    <div className="mt-4 w-full">
       <StepIndicator step={step} />
-      <form onSubmit={handleSubmit} className="surface-glass mx-auto w-full max-w-lg space-y-5 p-6 sm:p-8">
+      <form onSubmit={handleSubmit} className="surface-glass w-full space-y-3.5 p-4">
         {error ? (
-          <div className="rounded-xl border border-red-400/40 bg-red-500/10 px-3 py-2 text-sm text-red-200">{error}</div>
+          <div className="rounded-lg border border-red-400/40 bg-red-500/10 px-3 py-2 text-[13px] text-red-200">{error}</div>
         ) : null}
 
-        <div className="rounded-lg border border-white/10 bg-white/5 px-3 py-3 text-center sm:text-left">
-          <p className="font-medium text-white">{initial.name}</p>
-          <p className="mt-1 text-xs text-white/50">
+        <div className="rounded-lg border border-white/10 bg-white/5 px-3 py-2.5">
+          <p className="text-[13px] font-medium text-white">{initial.name}</p>
+          <p className="mt-0.5 text-[11px] text-white/45">
             Slug: <span className="font-mono">{initial.slug}</span>
           </p>
         </div>
 
         {step === 1 ? (
           <>
-            <label className="grid gap-2 text-sm text-white/90">
+            <label className="grid gap-1.5 text-[13px] text-white/80">
               Lugar
               <input className="input-design" value={place} onChange={(e) => setPlace(e.target.value)} placeholder="Ciudad / venue" disabled={pending} />
             </label>
-            <label className="grid gap-2 text-sm text-white/90">
+            <label className="grid gap-1.5 text-[13px] text-white/80">
               Fecha y hora del evento
               <input
                 className="input-design"
@@ -138,10 +138,10 @@ export function EventEditForm({ eventId, initial }: EventEditFormProps) {
               />
               <span className="text-xs text-white/45">Vacío = se borra la fecha guardada.</span>
             </label>
-            <label className="grid gap-2 text-sm text-white/90">
+            <label className="grid gap-1.5 text-[13px] text-white/80">
               Descripción (catálogo público)
               <textarea
-                className="input-design min-h-[88px] resize-y"
+                className="input-design min-h-[72px] resize-y"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 rows={3}
@@ -151,7 +151,7 @@ export function EventEditForm({ eventId, initial }: EventEditFormProps) {
             </label>
             <EventCoverUploadField imageUrl={coverImageUrl} onImageUrlChange={setCoverImageUrl} disabled={pending} />
 
-            <label className="grid gap-2 text-sm text-white/90">
+            <label className="grid gap-1.5 text-[13px] text-white/80">
               <span className="flex items-center gap-2">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden className="text-emerald-400">
                   <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.92 12a19.79 19.79 0 0 1-3-8.57A2 2 0 0 1 3.92 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
@@ -173,10 +173,10 @@ export function EventEditForm({ eventId, initial }: EventEditFormProps) {
               </span>
             </label>
 
-            <button type="button" className="btn-cta-primary mt-2 w-full justify-center" onClick={goStep2} disabled={pending}>
+            <button type="button" className="btn-cta-primary mt-1 w-full justify-center" onClick={goStep2} disabled={pending}>
               Continuar al paso 2
             </button>
-            <Link href="/app/eventos" className="block text-center text-sm text-white/55 hover:text-white">
+            <Link href="/app/eventos" className="block text-center text-[13px] text-white/45 hover:text-white">
               Cancelar
             </Link>
           </>

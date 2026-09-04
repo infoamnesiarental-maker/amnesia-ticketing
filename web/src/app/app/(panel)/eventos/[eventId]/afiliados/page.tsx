@@ -94,7 +94,7 @@ export default async function AfiliadosPage({ params }: { params: Promise<{ even
       <div className="mt-3">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <h1 className="text-xl font-bold text-white sm:text-2xl">Afiliados</h1>
+            <h1 className="text-xl font-bold text-white">Afiliados</h1>
             <p className="mt-0.5 text-sm text-white/50 truncate">{eventName}</p>
           </div>
           {/* Link rápido a ventas solo en sm+ */}

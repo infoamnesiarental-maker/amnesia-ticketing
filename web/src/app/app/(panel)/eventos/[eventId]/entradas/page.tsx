@@ -57,7 +57,7 @@ export default async function EntradasListPage({ params }: { params: Promise<{ e
       </div>
       <div className="mt-4 flex flex-col items-center gap-4 text-center sm:flex-row sm:items-center sm:justify-between sm:text-left">
         <div className="min-w-0">
-          <h1 className="text-2xl font-bold text-white">Tipos de entrada</h1>
+          <h1 className="text-xl font-bold text-white">Tipos de entrada</h1>
           <p className="mt-1 text-sm text-white/65">
             Evento: <span className="text-white">{eventName}</span>{" "}
             <span className="font-mono text-white/50">({String(event.slug)})</span>

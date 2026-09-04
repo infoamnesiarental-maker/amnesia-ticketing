@@ -130,7 +130,7 @@ export function Cockpit({
   return (
     <div className="mx-auto w-full max-w-6xl md:max-w-none">
       <div className="text-center sm:text-left">
-        <h1 className="text-2xl font-bold text-white">Validar pagos</h1>
+        <h1 className="text-xl font-bold text-white">Validar pagos</h1>
         <p className="mt-1 text-sm text-white/60">
           Compará el comprobante con tu cuenta de Mercado Pago / banco y confirmá.
         </p>

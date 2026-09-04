@@ -99,19 +99,19 @@ export function TicketTypeForm({
     <div className={hideChrome ? undefined : "mx-auto w-full max-w-lg"}>
       {hideChrome ? null : (
         <>
-          <Link href={backHref} className="inline-flex text-sm text-white/60 hover:text-white">
+          <Link href={backHref} className="inline-flex text-[13px] text-white/45 hover:text-white">
             ← Tipos de entrada
           </Link>
-          <h1 className="mt-4 text-2xl font-bold text-white">{title}</h1>
+          <h1 className="mt-2 text-xl font-bold text-white">{title}</h1>
         </>
       )}
-      <form onSubmit={onSubmit} className={`surface-glass grid w-full gap-4 p-6 ${hideChrome ? "mt-0" : "mt-8"}`}>
+      <form onSubmit={onSubmit} className={`surface-glass grid w-full gap-3.5 p-4 ${hideChrome ? "mt-0" : "mt-4"}`}>
         <input type="hidden" name="event_id" value={eventId} />
         {mode === "edit" && initial ? <input type="hidden" name="ticket_type_id" value={initial.id} /> : null}
         {error ? (
           <div className="rounded-xl border border-red-400/40 bg-red-500/10 px-3 py-2 text-sm text-red-200">{error}</div>
         ) : null}
-        <label className="grid gap-2 text-sm text-white/90">
+        <label className="grid gap-1.5 text-[13px] text-white/80">
           Nombre visible
           <input
             className="input-design"
@@ -121,7 +121,7 @@ export function TicketTypeForm({
             defaultValue={initial?.name ?? ""}
           />
         </label>
-        <label className="grid gap-2 text-sm text-white/90">
+        <label className="grid gap-1.5 text-[13px] text-white/80">
           Slug interno (opcional)
           <input
             className="input-design"
@@ -131,7 +131,7 @@ export function TicketTypeForm({
             defaultValue={initial?.slug ?? ""}
           />
         </label>
-        <label className="grid gap-2 text-sm text-white/90">
+        <label className="grid gap-1.5 text-[13px] text-white/80">
           Descripción (opcional)
           <textarea
             className="input-design min-h-[88px] resize-y"
@@ -140,7 +140,7 @@ export function TicketTypeForm({
             defaultValue={initial?.description ?? ""}
           />
         </label>
-        <label className="grid gap-2 text-sm text-white/90">
+        <label className="grid gap-1.5 text-[13px] text-white/80">
           Precio (ARS)
           <input
             className="input-design"
@@ -153,7 +153,7 @@ export function TicketTypeForm({
             placeholder="1500 o 1500.50"
           />
         </label>
-        <label className="grid gap-2 text-sm text-white/90">
+        <label className="grid gap-1.5 text-[13px] text-white/80">
           Stock total
           <input
             className="input-design"
@@ -166,7 +166,7 @@ export function TicketTypeForm({
             defaultValue={initial != null ? initial.stock_total : 0}
           />
         </label>
-        <label className="grid gap-2 text-sm text-white/90">
+        <label className="grid gap-1.5 text-[13px] text-white/80">
           Venta hasta (opcional)
           <input
             className="input-design"
