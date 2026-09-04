@@ -78,11 +78,24 @@ function IconUser() {
   );
 }
 
+function IconCard() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M3 8.5A2.5 2.5 0 0 1 5.5 6h13A2.5 2.5 0 0 1 21 8.5v7a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 15.5v-7Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+      />
+      <path d="M3 10h18M7 15h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}
 
 const NAV: Array<{ href: string; label: string; hint: string; icon: ReactNode }> = [
   { href: "/admin", label: "Resumen", hint: "Métricas y alertas", icon: <IconLayout /> },
   { href: "/admin/productoras", label: "Productoras", hint: "Altas y estados", icon: <IconBuilding /> },
   { href: "/admin/eventos", label: "Eventos", hint: "Todos los eventos", icon: <IconCalendar /> },
+  { href: "/admin/pagos", label: "Pagos", hint: "Checkout Mercado Pago", icon: <IconCard /> },
   { href: "/admin/usuarios", label: "Usuarios", hint: "Cuentas Supabase", icon: <IconUsers /> },
   { href: "/admin/perfil", label: "Perfil", hint: "Datos personales y sesión", icon: <IconUser /> },
 ];

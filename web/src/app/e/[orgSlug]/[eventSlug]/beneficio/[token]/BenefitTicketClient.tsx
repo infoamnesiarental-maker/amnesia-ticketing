@@ -21,6 +21,7 @@ export interface BenefitCheckoutData {
   discountedPriceArs: number;
   mpAlias: string;
   campaignNote: string | null;
+  mpCheckoutEnabled: boolean;
 }
 
 function fmtDate(iso: string | null): string {
@@ -55,11 +56,13 @@ export function BenefitTicketClient({ data }: { data: BenefitCheckoutData }) {
     }
 
     const fd = new FormData(e.currentTarget);
-    const proof = fd.get("proof");
-    if (proof && typeof proof !== "string" && proof.size > PUBLIC_PROOF_MAX_BYTES) {
-      const mb = (PUBLIC_PROOF_MAX_BYTES / (1024 * 1024)).toFixed(0);
-      setError(`El comprobante es demasiado pesado. Máximo ${mb} MB.`);
-      return;
+    if (!data.mpCheckoutEnabled) {
+      const proof = fd.get("proof");
+      if (proof && typeof proof !== "string" && proof.size > PUBLIC_PROOF_MAX_BYTES) {
+        const mb = (PUBLIC_PROOF_MAX_BYTES / (1024 * 1024)).toFixed(0);
+        setError(`El comprobante es demasiado pesado. Máximo ${mb} MB.`);
+        return;
+      }
     }
 
     fd.set(
@@ -161,22 +164,40 @@ export function BenefitTicketClient({ data }: { data: BenefitCheckoutData }) {
         </section>
 
         <section className="surface-glass space-y-4 p-5 sm:p-6">
-          <h2 className="text-lg font-semibold text-white">3. Pago y comprobante</h2>
-          <p className="text-sm text-white/75">
-            Transferí exactamente <span className="font-semibold text-brand">{money.format(data.discountedPriceArs)}</span> al alias:
-          </p>
-          <p className="rounded-xl border border-brand/40 bg-brand/10 px-4 py-3 font-mono text-base text-white">{data.mpAlias}</p>
-          <label className="grid gap-2 text-sm text-white/90">
-            Captura del comprobante (JPG, PNG o WebP, máx. {(PUBLIC_PROOF_MAX_BYTES / (1024 * 1024)).toFixed(0)} MB)
-            <input
-              className="text-sm text-white/80 file:mr-3 file:rounded-lg file:border-0 file:bg-white/10 file:px-3 file:py-2 file:text-white"
-              name="proof"
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              required
-              disabled={pending}
-            />
-          </label>
+          {data.mpCheckoutEnabled ? (
+            <>
+              <h2 className="text-lg font-semibold text-white">3. Pago con Mercado Pago</h2>
+              <p className="text-sm text-white/75">
+                Vas a pagar{" "}
+                <span className="font-semibold text-brand">{money.format(data.discountedPriceArs)}</span> en
+                Mercado Pago. No hace falta subir comprobante.
+              </p>
+            </>
+          ) : (
+            <>
+              <h2 className="text-lg font-semibold text-white">3. Pago y comprobante</h2>
+              <p className="text-sm text-white/75">
+                Transferí exactamente{" "}
+                <span className="font-semibold text-brand">{money.format(data.discountedPriceArs)}</span> al
+                alias:
+              </p>
+              <p className="rounded-xl border border-brand/40 bg-brand/10 px-4 py-3 font-mono text-base text-white">
+                {data.mpAlias}
+              </p>
+              <label className="grid gap-2 text-sm text-white/90">
+                Captura del comprobante (JPG, PNG o WebP, máx.{" "}
+                {(PUBLIC_PROOF_MAX_BYTES / (1024 * 1024)).toFixed(0)} MB)
+                <input
+                  className="text-sm text-white/80 file:mr-3 file:rounded-lg file:border-0 file:bg-white/10 file:px-3 file:py-2 file:text-white"
+                  name="proof"
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  required
+                  disabled={pending}
+                />
+              </label>
+            </>
+          )}
         </section>
 
         {error ? (
@@ -184,7 +205,13 @@ export function BenefitTicketClient({ data }: { data: BenefitCheckoutData }) {
         ) : null}
 
         <button type="submit" className="btn-cta-primary w-full justify-center" disabled={pending}>
-          {pending ? "Enviando..." : `Comprar 1 entrada por ${money.format(data.discountedPriceArs)}`}
+          {pending
+            ? data.mpCheckoutEnabled
+              ? "Redirigiendo..."
+              : "Enviando..."
+            : data.mpCheckoutEnabled
+              ? `Pagar ${money.format(data.discountedPriceArs)} con Mercado Pago`
+              : `Comprar 1 entrada por ${money.format(data.discountedPriceArs)}`}
         </button>
 
         <p className="text-center text-xs text-white/45">Cada código permite una sola compra.</p>

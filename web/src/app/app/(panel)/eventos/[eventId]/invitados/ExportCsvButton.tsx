@@ -25,6 +25,7 @@ const STATUS_LABEL: Record<string, string> = {
   validated: "Confirmado",
   manual_review: "En revisión",
   pending_validation: "Esperando pago",
+  awaiting_payment: "Checkout Mercado Pago",
   rejected: "Rechazada",
   cancelled: "Cancelada",
 };

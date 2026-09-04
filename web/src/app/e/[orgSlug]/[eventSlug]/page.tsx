@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { SiteHeader } from "@/components/SiteHeader";
+import { getMpCheckoutEnabled } from "@/lib/platform-settings";
 import { createSupabaseServiceRoleClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { formatEventStartsAt } from "@/lib/format-datetime";
@@ -50,9 +51,17 @@ export default async function PublicTicketeraPage(props: {
   let ctx = parseTicketeraContext(data);
   if (!ctx) notFound();
 
+  const admin = createSupabaseServiceRoleClient();
+  if (admin) {
+    // Fuente de verdad del switch (por si la RPC pública todavía no expone el campo).
+    const enabled = await getMpCheckoutEnabled(admin);
+    if (enabled !== ctx.mp_checkout_enabled) {
+      ctx = { ...ctx, mp_checkout_enabled: enabled };
+    }
+  }
+
   /** Si la RPC es vieja (sin `cover_image_url`), completamos la tapa con lectura server-side. */
   if (!ctx.event.cover_image_url) {
-    const admin = createSupabaseServiceRoleClient();
     if (admin) {
       const { data: row } = await admin
         .from("events")

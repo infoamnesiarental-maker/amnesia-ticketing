@@ -28,6 +28,8 @@ export interface TicketeraContext {
   organization: TicketeraOrganization;
   event: TicketeraEvent;
   ticket_types: TicketeraTicketType[];
+  /** Switch global de /admin/pagos: Checkout Pro vs transferencia. */
+  mp_checkout_enabled: boolean;
 }
 
 function isRecord(v: unknown): v is Record<string, unknown> {
@@ -76,5 +78,10 @@ export function parseTicketeraContext(data: unknown): TicketeraContext | null {
     };
   });
 
-  return { organization, event, ticket_types };
+  return {
+    organization,
+    event,
+    ticket_types,
+    mp_checkout_enabled: Boolean(data.mp_checkout_enabled),
+  };
 }

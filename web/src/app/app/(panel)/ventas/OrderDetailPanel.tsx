@@ -9,7 +9,13 @@ import { CopyButton } from "./CopyButton";
 
 const money = new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 2 });
 
-export type OrderStatus = "pending_validation" | "validated" | "manual_review" | "rejected" | "cancelled";
+export type OrderStatus =
+  | "pending_validation"
+  | "awaiting_payment"
+  | "validated"
+  | "manual_review"
+  | "rejected"
+  | "cancelled";
 
 export interface OrderDetail {
   id: string;
@@ -39,6 +45,7 @@ interface OrderDetailPanelProps {
 const STATUS_BADGES: Record<OrderStatus, { label: string; cls: string }> = {
   validated: { label: "Validada", cls: "bg-emerald-500/15 text-emerald-200 border-emerald-500/30" },
   pending_validation: { label: "Pendiente", cls: "bg-amber-500/15 text-amber-200 border-amber-500/30" },
+  awaiting_payment: { label: "Esperando MP", cls: "bg-sky-500/15 text-sky-200 border-sky-500/30" },
   manual_review: { label: "En revisión", cls: "bg-violet-500/15 text-violet-200 border-violet-500/30" },
   rejected: { label: "Rechazada", cls: "bg-red-500/10 text-red-200 border-red-400/30" },
   cancelled: { label: "Cancelada", cls: "bg-red-500/10 text-red-200 border-red-400/30" },
@@ -80,9 +87,10 @@ export function OrderDetailPanel({ detail, onAfterAction }: OrderDetailPanelProp
   }, [detail.id]);
 
   const isFinal = detail.status === "validated" || detail.status === "rejected" || detail.status === "cancelled";
+  const isMpAwaiting = detail.status === "awaiting_payment";
 
   function handleValidate() {
-    if (isFinal) return;
+    if (isFinal || isMpAwaiting) return;
     setFeedback(null);
     startTransition(async () => {
       const res = await validateOrder(detail.id);
@@ -136,6 +144,7 @@ export function OrderDetailPanel({ detail, onAfterAction }: OrderDetailPanelProp
       if (e.metaKey || e.ctrlKey || e.altKey) return;
 
       if (e.key === "v" || e.key === "V") {
+        if (isMpAwaiting) return;
         e.preventDefault();
         handleValidate();
       } else if (e.key === "r" || e.key === "R") {
@@ -316,16 +325,24 @@ export function OrderDetailPanel({ detail, onAfterAction }: OrderDetailPanelProp
 
       {!isFinal ? (
         <section className="surface-glass sticky bottom-2 z-10 grid gap-3 p-4 ring-1 ring-white/10">
+          {isMpAwaiting ? (
+            <p className="text-center text-sm text-sky-100/90">
+              Esta orden está esperando el pago en Mercado Pago. No valides a mano: se confirma sola cuando MP
+              notifica el pago aprobado. Podés rechazarla si el comprador abandonó el checkout.
+            </p>
+          ) : null}
           <div className="flex flex-wrap items-center gap-3">
-            <button
-              type="button"
-              onClick={handleValidate}
-              disabled={pending}
-              className="flex-1 rounded-xl border border-emerald-400/40 bg-emerald-500/15 px-4 py-3 text-sm font-semibold text-emerald-50 transition hover:bg-emerald-500/25 disabled:opacity-50"
-            >
-              {pending ? "Procesando…" : "✓ Validar pago"}
-              <span className="ml-2 rounded bg-black/30 px-1.5 py-0.5 text-[10px] font-mono text-white/70">V</span>
-            </button>
+            {!isMpAwaiting ? (
+              <button
+                type="button"
+                onClick={handleValidate}
+                disabled={pending}
+                className="flex-1 rounded-xl border border-emerald-400/40 bg-emerald-500/15 px-4 py-3 text-sm font-semibold text-emerald-50 transition hover:bg-emerald-500/25 disabled:opacity-50"
+              >
+                {pending ? "Procesando…" : "✓ Validar pago"}
+                <span className="ml-2 rounded bg-black/30 px-1.5 py-0.5 text-[10px] font-mono text-white/70">V</span>
+              </button>
+            ) : null}
             <button
               type="button"
               onClick={handleReject}
@@ -336,10 +353,12 @@ export function OrderDetailPanel({ detail, onAfterAction }: OrderDetailPanelProp
               <span className="ml-2 rounded bg-black/30 px-1.5 py-0.5 text-[10px] font-mono text-white/70">R</span>
             </button>
           </div>
-          <p className="text-center text-[11px] text-white/40">
-            Atajos: <span className="font-mono">V</span> validar · <span className="font-mono">R</span> rechazar ·{" "}
-            <span className="font-mono">O</span> abrir comprobante · <span className="font-mono">J/K</span> navegar
-          </p>
+          {!isMpAwaiting ? (
+            <p className="text-center text-[11px] text-white/40">
+              Atajos: <span className="font-mono">V</span> validar · <span className="font-mono">R</span> rechazar ·{" "}
+              <span className="font-mono">O</span> abrir comprobante · <span className="font-mono">J/K</span> navegar
+            </p>
+          ) : null}
         </section>
       ) : (
         <section className="surface-glass grid gap-3 p-4 text-sm text-white/75">

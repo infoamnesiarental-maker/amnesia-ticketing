@@ -12,7 +12,7 @@ const FILTERS: Record<string, OrderStatus[]> = {
   todo: ["pending_validation", "manual_review"],
   validated: ["validated"],
   rejected: ["rejected", "cancelled"],
-  all: ["pending_validation", "manual_review", "validated", "rejected", "cancelled"],
+  all: ["pending_validation", "awaiting_payment", "manual_review", "validated", "rejected", "cancelled"],
 };
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -205,13 +205,16 @@ export default async function VentasPage({ searchParams }: VentasPageProps) {
         });
 
         let proofUrl: string | null = null;
-        try {
-          const { data: signed } = await admin.storage
-            .from("proofs")
-            .createSignedUrl(det.proof_object_path, 60 * 30);
-          proofUrl = signed?.signedUrl ?? null;
-        } catch {
-          proofUrl = null;
+        const proofPath = String(det.proof_object_path || "");
+        if (proofPath && proofPath !== "mp_checkout" && proofPath !== "manual") {
+          try {
+            const { data: signed } = await admin.storage
+              .from("proofs")
+              .createSignedUrl(proofPath, 60 * 30);
+            proofUrl = signed?.signedUrl ?? null;
+          } catch {
+            proofUrl = null;
+          }
         }
 
         selectedDetail = {

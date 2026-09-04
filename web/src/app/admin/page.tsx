@@ -1,6 +1,12 @@
 import { createSupabaseServiceRoleClient } from "@/lib/supabase/admin";
 
-type OrderStatus = "pending_validation" | "validated" | "manual_review" | "rejected" | "cancelled";
+type OrderStatus =
+  | "pending_validation"
+  | "awaiting_payment"
+  | "validated"
+  | "manual_review"
+  | "rejected"
+  | "cancelled";
 
 const money = new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 2 });
 
@@ -17,9 +23,11 @@ function statusPill(status: string) {
       ? "bg-emerald-500/15 text-emerald-200 border-emerald-500/25"
       : s === "pending_validation"
         ? "bg-amber-500/15 text-amber-200 border-amber-500/25"
-        : s === "manual_review"
-          ? "bg-white/10 text-white/70 border-white/15"
-          : "bg-red-500/10 text-red-200 border-red-400/25";
+        : s === "awaiting_payment"
+          ? "bg-sky-500/15 text-sky-200 border-sky-500/25"
+          : s === "manual_review"
+            ? "bg-white/10 text-white/70 border-white/15"
+            : "bg-red-500/10 text-red-200 border-red-400/25";
   return <span className={`rounded-full border px-2 py-0.5 text-xs ${cls}`}>{status}</span>;
 }
 

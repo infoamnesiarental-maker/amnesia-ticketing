@@ -2,6 +2,13 @@
 
 import { createHash } from "node:crypto";
 
+import {
+  createCheckoutPreference,
+  isMpCheckoutConfigured,
+  MP_CHECKOUT_TTL_MS,
+  sha256Text,
+} from "@/lib/mercadopago";
+import { getMpCheckoutEnabled } from "@/lib/platform-settings";
 import { createSupabaseServiceRoleClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { parseTicketeraContext, type TicketeraContext } from "@/lib/ticketera";
@@ -164,6 +171,52 @@ async function triggerAutomationWebhook(payload: Record<string, unknown>): Promi
   }
 }
 
+type AdminClient = NonNullable<ReturnType<typeof createSupabaseServiceRoleClient>>;
+
+async function attachMpCheckoutRedirect(opts: {
+  admin: AdminClient;
+  orderId: string;
+  items: Array<{ id: string; title: string; quantity: number; unit_price: number; description?: string }>;
+  buyer: { firstName: string; lastName: string; email: string; dni: string };
+}): Promise<PublicOrderResult> {
+  const expiresAt = new Date(Date.now() + MP_CHECKOUT_TTL_MS);
+  const pref = await createCheckoutPreference({
+    orderId: opts.orderId,
+    items: opts.items,
+    payer: opts.buyer,
+    expiresAt,
+  });
+
+  if ("error" in pref) {
+    try {
+      await opts.admin.rpc("release_benefit_code_for_order", { p_order_id: opts.orderId });
+    } catch {
+      // ignore
+    }
+    await opts.admin.from("attendees").delete().eq("order_id", opts.orderId);
+    await opts.admin.from("order_items").delete().eq("order_id", opts.orderId);
+    await opts.admin.from("orders").delete().eq("id", opts.orderId);
+    return err(pref.error);
+  }
+
+  const { error: upErr } = await opts.admin
+    .from("orders")
+    .update({
+      mp_preference_id: pref.preferenceId,
+      checkout_expires_at: expiresAt.toISOString(),
+    })
+    .eq("id", opts.orderId);
+
+  if (upErr) {
+    await opts.admin.from("attendees").delete().eq("order_id", opts.orderId);
+    await opts.admin.from("order_items").delete().eq("order_id", opts.orderId);
+    await opts.admin.from("orders").delete().eq("id", opts.orderId);
+    return err(upErr.message);
+  }
+
+  return { ok: true, next: pref.initPoint };
+}
+
 export async function submitPublicOrder(formData: FormData): Promise<PublicOrderResult> {
   const admin = createSupabaseServiceRoleClient();
   if (!admin) {
@@ -224,6 +277,104 @@ export async function submitPublicOrder(formData: FormData): Promise<PublicOrder
   const first = buyer.first_name;
   const last = buyer.last_name;
   const dni = buyer.dni;
+
+  const useMpCheckout = (await getMpCheckoutEnabled(admin)) || ctx.mp_checkout_enabled;
+  if (useMpCheckout) {
+    if (!isMpCheckoutConfigured()) {
+      return err(
+        "El cobro con Mercado Pago está activo pero el servidor no tiene MP_ACCESS_TOKEN / MP_WEBHOOK_SECRET.",
+      );
+    }
+
+    try {
+      await admin.rpc("expire_stale_mp_checkout_orders");
+    } catch {
+      // best-effort
+    }
+
+    const orderId = crypto.randomUUID();
+    const expiresAt = new Date(Date.now() + MP_CHECKOUT_TTL_MS);
+
+    const { error: ordErr } = await admin.from("orders").insert({
+      id: orderId,
+      event_id: ctx.event.id,
+      buyer_first_name: first,
+      buyer_last_name: last,
+      buyer_dni: dni,
+      buyer_phone: buyer.phone ?? "",
+      buyer_email: email,
+      total_qty: totalQty,
+      total_ars: totalArs,
+      proof_object_path: "mp_checkout",
+      proof_sha256: sha256Text(`mp_checkout:${orderId}`),
+      status: "awaiting_payment",
+      checkout_expires_at: expiresAt.toISOString(),
+      affiliate_code: affiliateCodeRaw,
+    });
+
+    if (ordErr) {
+      if (/awaiting_payment|invalid input value for enum/i.test(ordErr.message ?? "")) {
+        return err(
+          "Falta migrar la base: ejecutá supabase/mp-checkout-global.sql en el SQL Editor de Supabase.",
+        );
+      }
+      return err(ordErr.message);
+    }
+
+    const { error: itemsErr } = await admin.from("order_items").insert(
+      items.map((i) => ({
+        order_id: orderId,
+        ticket_type_id: i.ticket_type_id,
+        qty: i.qty,
+        unit_price_ars: i.unit_price_ars,
+      })),
+    );
+
+    if (itemsErr) {
+      await admin.from("orders").delete().eq("id", orderId);
+      return err(itemsErr.message);
+    }
+
+    const { error: attErr } = await admin.from("attendees").insert(
+      attendees.map((a) => ({
+        order_id: orderId,
+        position: a.position,
+        first_name: a.first_name,
+        last_name: a.last_name,
+        dni: a.dni,
+        phone: a.phone,
+        is_buyer: a.is_buyer,
+      })),
+    );
+
+    if (attErr) {
+      await admin.from("order_items").delete().eq("order_id", orderId);
+      await admin.from("orders").delete().eq("id", orderId);
+      if (/relation .*attendees.* does not exist|undefined_table/i.test(attErr.message)) {
+        return err(
+          "Falta la tabla attendees en la base. Ejecutá supabase/attendees-per-ticket.sql en el SQL Editor.",
+        );
+      }
+      return err(`No se pudieron guardar los datos de los asistentes: ${attErr.message}`);
+    }
+
+    const titleById = new Map(ctx.ticket_types.map((t) => [t.id, t]));
+    return attachMpCheckoutRedirect({
+      admin,
+      orderId,
+      items: items.map((i) => {
+        const tt = titleById.get(i.ticket_type_id);
+        return {
+          id: i.ticket_type_id,
+          title: tt?.name ?? "Entrada",
+          description: tt?.description ?? undefined,
+          quantity: i.qty,
+          unit_price: i.unit_price_ars,
+        };
+      }),
+      buyer: { firstName: first, lastName: last, email, dni },
+    });
+  }
 
   const file = formData.get("proof");
   if (!file || typeof file === "string" || file.size < 1) return err("Subí una imagen del comprobante.");
@@ -398,6 +549,119 @@ export async function submitBenefitCampaignOrder(formData: FormData): Promise<Pu
     email,
   );
   if (buyerErr) return err(buyerErr);
+
+  const useMpCheckout = (await getMpCheckoutEnabled(admin)) || ctx.mp_checkout_enabled;
+  if (useMpCheckout) {
+    if (!isMpCheckoutConfigured()) {
+      return err(
+        "El cobro con Mercado Pago está activo pero el servidor no tiene MP_ACCESS_TOKEN / MP_WEBHOOK_SECRET.",
+      );
+    }
+
+    try {
+      await admin.rpc("expire_stale_mp_checkout_orders");
+    } catch {
+      // best-effort
+    }
+
+    const orderId = crypto.randomUUID();
+    const expiresAt = new Date(Date.now() + MP_CHECKOUT_TTL_MS);
+
+    const { error: ordErr } = await admin.from("orders").insert({
+      id: orderId,
+      event_id: ctx.event.id,
+      buyer_first_name: buyer.first_name,
+      buyer_last_name: buyer.last_name,
+      buyer_dni: buyer.dni,
+      buyer_phone: buyer.phone ?? "",
+      buyer_email: email,
+      total_qty: 1,
+      total_ars: unitPrice,
+      proof_object_path: "mp_checkout",
+      proof_sha256: sha256Text(`mp_checkout:${orderId}`),
+      status: "awaiting_payment",
+      checkout_expires_at: expiresAt.toISOString(),
+    });
+
+    if (ordErr) {
+      if (/awaiting_payment|invalid input value for enum/i.test(ordErr.message ?? "")) {
+        return err(
+          "Falta migrar la base: ejecutá supabase/mp-checkout-global.sql en el SQL Editor de Supabase.",
+        );
+      }
+      return err(ordErr.message);
+    }
+
+    const { error: itemErr } = await admin.from("order_items").insert({
+      order_id: orderId,
+      ticket_type_id: ticketType.id,
+      qty: 1,
+      unit_price_ars: unitPrice,
+    });
+    if (itemErr) {
+      await admin.from("orders").delete().eq("id", orderId);
+      return err(itemErr.message);
+    }
+
+    const { error: attErr } = await admin.from("attendees").insert({
+      order_id: orderId,
+      position: 1,
+      first_name: buyer.first_name,
+      last_name: buyer.last_name,
+      dni: buyer.dni,
+      phone: buyer.phone,
+      is_buyer: true,
+    });
+    if (attErr) {
+      await admin.from("order_items").delete().eq("order_id", orderId);
+      await admin.from("orders").delete().eq("id", orderId);
+      if (/relation .*attendees.* does not exist|undefined_table/i.test(attErr.message)) {
+        return err(
+          "Falta la tabla attendees en la base. Ejecutá supabase/attendees-per-ticket.sql en el SQL Editor.",
+        );
+      }
+      return err(`No se pudieron guardar los datos del asistente: ${attErr.message}`);
+    }
+
+    const { data: usedRows, error: useErr } = await admin
+      .from("benefit_campaign_codes")
+      .update({
+        status: "used",
+        used_order_id: orderId,
+        used_at: new Date().toISOString(),
+      })
+      .eq("id", String(codeRow.id))
+      .eq("status", "pending")
+      .is("used_order_id", null)
+      .select("id");
+
+    if (useErr || !usedRows || usedRows.length === 0) {
+      await admin.from("attendees").delete().eq("order_id", orderId);
+      await admin.from("order_items").delete().eq("order_id", orderId);
+      await admin.from("orders").delete().eq("id", orderId);
+      return err("Este código de beneficio ya fue utilizado por otra persona.");
+    }
+
+    return attachMpCheckoutRedirect({
+      admin,
+      orderId,
+      items: [
+        {
+          id: ticketType.id,
+          title: ticketType.name,
+          description: ticketType.description ?? undefined,
+          quantity: 1,
+          unit_price: unitPrice,
+        },
+      ],
+      buyer: {
+        firstName: buyer.first_name,
+        lastName: buyer.last_name,
+        email,
+        dni: buyer.dni,
+      },
+    });
+  }
 
   const file = formData.get("proof");
   if (!file || typeof file === "string" || file.size < 1) return err("Subí una imagen del comprobante.");

@@ -39,6 +39,7 @@ const FILTER_OPTIONS = [
 
 const STATUS_DOT: Record<OrderStatus, string> = {
   pending_validation: "bg-amber-400",
+  awaiting_payment: "bg-sky-400",
   manual_review: "bg-violet-400",
   validated: "bg-emerald-400",
   rejected: "bg-red-400",

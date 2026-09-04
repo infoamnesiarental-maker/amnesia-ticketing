@@ -1,6 +1,14 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-const RESERVED_ORDER_STATUSES = ["pending_validation", "validated", "manual_review"] as const;
+const ALWAYS_RESERVED = new Set(["pending_validation", "validated", "manual_review"]);
+
+function orderReservesStock(status: string, checkoutExpiresAt: string | null): boolean {
+  if (ALWAYS_RESERVED.has(status)) return true;
+  if (status !== "awaiting_payment") return false;
+  if (!checkoutExpiresAt) return true;
+  const t = new Date(checkoutExpiresAt).getTime();
+  return Number.isFinite(t) && t > Date.now();
+}
 
 export interface TicketTypeStockRow {
   id: string;
@@ -28,17 +36,27 @@ export async function loadTicketTypesWithAvailability(
   const typeIds = types.map((t) => String(t.id));
   const { data: items, error: itemsErr } = await admin
     .from("order_items")
-    .select("ticket_type_id, qty, orders!inner(status, event_id)")
+    .select("ticket_type_id, qty, orders!inner(status, event_id, checkout_expires_at)")
     .eq("orders.event_id", eventId)
     .in("ticket_type_id", typeIds)
-    .in("orders.status", [...RESERVED_ORDER_STATUSES]);
+    .in("orders.status", ["pending_validation", "validated", "manual_review", "awaiting_payment"]);
 
   if (itemsErr) return { types: [], error: itemsErr.message };
 
   const soldByType = new Map<string, number>();
   for (const row of items ?? []) {
-    const tid = String((row as { ticket_type_id: string }).ticket_type_id);
-    const qty = Number((row as { qty: number }).qty) || 0;
+    const r = row as unknown as {
+      ticket_type_id: string;
+      qty: number;
+      orders:
+        | { status: string; checkout_expires_at: string | null }
+        | { status: string; checkout_expires_at: string | null }[]
+        | null;
+    };
+    const ord = Array.isArray(r.orders) ? r.orders[0] : r.orders;
+    if (!ord || !orderReservesStock(String(ord.status), ord.checkout_expires_at ?? null)) continue;
+    const tid = String(r.ticket_type_id);
+    const qty = Number(r.qty) || 0;
     soldByType.set(tid, (soldByType.get(tid) ?? 0) + qty);
   }
 

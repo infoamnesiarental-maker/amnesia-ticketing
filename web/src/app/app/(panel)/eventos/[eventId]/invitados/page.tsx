@@ -18,6 +18,7 @@ const STATUS_BADGE: Record<string, { label: string; cls: string }> = {
   validated: { label: "Confirmado", cls: "bg-emerald-500/15 text-emerald-200 border-emerald-500/30" },
   manual_review: { label: "En revisión", cls: "bg-violet-500/15 text-violet-200 border-violet-500/30" },
   pending_validation: { label: "Esperando pago", cls: "bg-amber-500/10 text-amber-200 border-amber-500/30" },
+  awaiting_payment: { label: "Checkout MP", cls: "bg-sky-500/10 text-sky-200 border-sky-500/30" },
 };
 
 interface AttendeeAdminRow {

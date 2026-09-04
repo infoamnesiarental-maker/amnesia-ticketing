@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { SiteHeader } from "@/components/SiteHeader";
+import { getMpCheckoutEnabled } from "@/lib/platform-settings";
 import { createSupabaseServiceRoleClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { parseTicketeraContext } from "@/lib/ticketera";
@@ -37,10 +38,17 @@ export default async function PublicBenefitPage(props: {
   }
 
   if (ticketeraData == null) notFound();
-  const ctx = parseTicketeraContext(ticketeraData);
+  let ctx = parseTicketeraContext(ticketeraData);
   if (!ctx) notFound();
 
   const admin = createSupabaseServiceRoleClient();
+  if (admin) {
+    const enabled = await getMpCheckoutEnabled(admin);
+    if (enabled !== ctx.mp_checkout_enabled) {
+      ctx = { ...ctx, mp_checkout_enabled: enabled };
+    }
+  }
+
   if (!admin) {
     return (
       <div className="min-h-screen bg-[#0A0A0A]">
@@ -132,6 +140,7 @@ export default async function PublicBenefitPage(props: {
     discountedPriceArs: Number(benefit.discounted_price_ars),
     mpAlias: ctx.event.mp_alias,
     campaignNote: (benefit.note as string | null) ?? null,
+    mpCheckoutEnabled: ctx.mp_checkout_enabled,
   };
 
   return (

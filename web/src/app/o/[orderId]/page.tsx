@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { generateTicketQrSvg } from "@/lib/qr";
+import { syncOrderFromMercadoPago } from "@/lib/mp-checkout-fulfill";
 import { createSupabaseServiceRoleClient } from "@/lib/supabase/admin";
 
 export const dynamic = "force-dynamic";
@@ -60,8 +61,8 @@ function statusInfo(status: string) {
   }
   if (status === "rejected" || status === "cancelled") {
     return {
-      title: "Compra rechazada",
-      desc: "El pago no fue confirmado por la productora. Si pensás que es un error, contactalos.",
+      title: "Compra no confirmada",
+      desc: "El pago no se confirmó. Si pensás que es un error, contactá a la productora o reintentá la compra.",
       cls: "border-red-400/40 bg-red-500/10 text-red-200",
     };
   }
@@ -70,6 +71,13 @@ function statusInfo(status: string) {
       title: "Tu compra está en revisión",
       desc: "La productora está revisando tu comprobante. Te avisaremos en cuanto se confirme.",
       cls: "border-violet-400/40 bg-violet-500/10 text-violet-200",
+    };
+  }
+  if (status === "awaiting_payment") {
+    return {
+      title: "Estamos confirmando tu pago",
+      desc: "Si ya pagaste en Mercado Pago, esto puede tardar unos segundos. Recargá la página en un momento.",
+      cls: "border-sky-400/40 bg-sky-500/10 text-sky-100",
     };
   }
   return {
@@ -107,6 +115,9 @@ export default async function BuyerOrderPage({ params }: PageProps) {
       </main>
     );
   }
+
+  // Backup: si volvés de MP y el webhook todavía no llegó, sincronizamos por API.
+  await syncOrderFromMercadoPago(orderId);
 
   const { data, error } = await admin.rpc("get_buyer_order_view", { p_order_id: orderId });
 
@@ -164,6 +175,11 @@ export default async function BuyerOrderPage({ params }: PageProps) {
       <section className={`mt-6 rounded-xl border p-4 text-left ${sInfo.cls}`}>
         <p className="text-base font-semibold">{sInfo.title}</p>
         <p className="mt-1 text-sm opacity-90">{sInfo.desc}</p>
+        {view.order.status === "awaiting_payment" ? (
+          <p className="mt-3 text-xs opacity-80">
+            Tip: si el pago quedó pendiente en Mercado Pago, esta página se actualiza sola cuando se acredite.
+          </p>
+        ) : null}
       </section>
 
       <section className="surface-glass mt-6 p-5 text-left">

@@ -277,7 +277,7 @@ export function PublicTicketeraClient({
   /** Código de afiliado desde ?ref= — se persiste en sessionStorage para el submit. */
   affiliateRef?: string | null;
 }) {
-  const { organization, event, ticket_types } = context;
+  const { organization, event, ticket_types, mp_checkout_enabled: mpCheckoutEnabled } = context;
   const [step, setStep] = useState<0 | 1 | 2>(0);
   const [qtyById, setQtyById] = useState<Record<string, number>>(() =>
     Object.fromEntries(ticket_types.map((t) => [t.id, 0])),
@@ -365,11 +365,13 @@ export function PublicTicketeraClient({
     e.preventDefault();
     setError(null);
     const fd = new FormData(e.currentTarget);
-    const proof = fd.get("proof");
-    if (proof && typeof proof !== "string" && proof.size > PUBLIC_PROOF_MAX_BYTES) {
-      const mb = (PUBLIC_PROOF_MAX_BYTES / (1024 * 1024)).toFixed(0);
-      setError(`El comprobante es demasiado pesado. Máximo ${mb} MB.`);
-      return;
+    if (!mpCheckoutEnabled) {
+      const proof = fd.get("proof");
+      if (proof && typeof proof !== "string" && proof.size > PUBLIC_PROOF_MAX_BYTES) {
+        const mb = (PUBLIC_PROOF_MAX_BYTES / (1024 * 1024)).toFixed(0);
+        setError(`El comprobante es demasiado pesado. Máximo ${mb} MB.`);
+        return;
+      }
     }
     const lines = ticket_types
       .map((tt) => {
@@ -755,68 +757,103 @@ export function PublicTicketeraClient({
 
       {/* Sección de pago */}
       <div className="surface-glass space-y-4 px-4 py-5 sm:px-6">
-        <div>
-          <h2 className="text-base font-semibold text-white">3. Pago y comprobante</h2>
-          <p className="mt-1 text-sm text-white/60">
-            Transferí exactamente{" "}
-            <span className="font-bold text-white">{money.format(totals.ars)}</span> al siguiente alias:
-          </p>
-        </div>
+        {mpCheckoutEnabled ? (
+          <>
+            <div>
+              <h2 className="text-base font-semibold text-white">3. Pago con Mercado Pago</h2>
+              <p className="mt-1 text-sm text-white/60">
+                Vas a pagar{" "}
+                <span className="font-bold text-white">{money.format(totals.ars)}</span> en el entorno
+                seguro de Mercado Pago. Al confirmar, volvés acá con tus entradas.
+              </p>
+            </div>
+            <div className="flex items-start gap-3 rounded-xl border border-brand/30 bg-brand/8 px-4 py-3">
+              <svg
+                className="mt-0.5 shrink-0 text-brand"
+                xmlns="http://www.w3.org/2000/svg"
+                width="15"
+                height="15"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <rect x="2" y="5" width="20" height="14" rx="2" />
+                <path d="M2 10h20" />
+              </svg>
+              <div>
+                <p className="text-sm font-medium text-white">Pago online</p>
+                <p className="mt-0.5 text-xs text-white/55">
+                  Te redirigimos a Mercado Pago. No hace falta subir comprobante.
+                </p>
+              </div>
+            </div>
+          </>
+        ) : (
+          <>
+            <div>
+              <h2 className="text-base font-semibold text-white">3. Pago y comprobante</h2>
+              <p className="mt-1 text-sm text-white/60">
+                Transferí exactamente{" "}
+                <span className="font-bold text-white">{money.format(totals.ars)}</span> al siguiente alias:
+              </p>
+            </div>
 
-        {/* Alias / CVU – bien grande y visible */}
-        <div className="rounded-2xl border border-brand/35 bg-brand/8 p-4">
-          <p className="mb-1.5 text-[10px] font-bold uppercase tracking-widest text-brand/60">
-            Alias / CVU Mercado Pago
-          </p>
-          <p className="break-all font-mono text-2xl font-bold tracking-wide text-white">
-            {event.mp_alias}
-          </p>
-        </div>
+            <div className="rounded-2xl border border-brand/35 bg-brand/8 p-4">
+              <p className="mb-1.5 text-[10px] font-bold uppercase tracking-widest text-brand/60">
+                Alias / CVU Mercado Pago
+              </p>
+              <p className="break-all font-mono text-2xl font-bold tracking-wide text-white">
+                {event.mp_alias}
+              </p>
+            </div>
 
-        {/* Aviso de monto exacto */}
-        <div className="flex items-start gap-3 rounded-xl border border-amber-400/25 bg-amber-400/8 px-4 py-3">
-          <svg
-            className="mt-0.5 shrink-0 text-amber-400"
-            xmlns="http://www.w3.org/2000/svg"
-            width="15"
-            height="15"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
-            <line x1="12" y1="9" x2="12" y2="13" />
-            <line x1="12" y1="17" x2="12.01" y2="17" />
-          </svg>
-          <div>
-            <p className="text-sm font-medium text-amber-200">
-              El monto debe ser exactamente{" "}
-              <span className="font-bold tabular-nums">{money.format(totals.ars)}</span>
-            </p>
-            <p className="mt-0.5 text-xs text-amber-200/60">
-              Si el monto no coincide, la validación automática no va a funcionar.
-            </p>
-          </div>
-        </div>
+            <div className="flex items-start gap-3 rounded-xl border border-amber-400/25 bg-amber-400/8 px-4 py-3">
+              <svg
+                className="mt-0.5 shrink-0 text-amber-400"
+                xmlns="http://www.w3.org/2000/svg"
+                width="15"
+                height="15"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                <line x1="12" y1="9" x2="12" y2="13" />
+                <line x1="12" y1="17" x2="12.01" y2="17" />
+              </svg>
+              <div>
+                <p className="text-sm font-medium text-amber-200">
+                  El monto debe ser exactamente{" "}
+                  <span className="font-bold tabular-nums">{money.format(totals.ars)}</span>
+                </p>
+                <p className="mt-0.5 text-xs text-amber-200/60">
+                  Si el monto no coincide, la validación automática no va a funcionar.
+                </p>
+              </div>
+            </div>
 
-        {/* Upload comprobante */}
-        <label className="grid gap-2 text-sm text-white/80">
-          <span className="font-medium">Subí el comprobante de la transferencia</span>
-          <span className="text-xs text-white/40">
-            JPG, PNG o WebP · máx. {(PUBLIC_PROOF_MAX_BYTES / (1024 * 1024)).toFixed(0)} MB
-          </span>
-          <input
-            className="rounded-xl border border-white/12 bg-white/5 p-3 text-sm text-white/75 transition file:mr-3 file:rounded-lg file:border-0 file:bg-brand/20 file:px-4 file:py-1.5 file:text-sm file:font-medium file:text-brand hover:border-white/20 hover:file:bg-brand/30"
-            name="proof"
-            type="file"
-            accept="image/jpeg,image/png,image/webp"
-            required
-            disabled={pending}
-          />
-        </label>
+            <label className="grid gap-2 text-sm text-white/80">
+              <span className="font-medium">Subí el comprobante de la transferencia</span>
+              <span className="text-xs text-white/40">
+                JPG, PNG o WebP · máx. {(PUBLIC_PROOF_MAX_BYTES / (1024 * 1024)).toFixed(0)} MB
+              </span>
+              <input
+                className="rounded-xl border border-white/12 bg-white/5 p-3 text-sm text-white/75 transition file:mr-3 file:rounded-lg file:border-0 file:bg-brand/20 file:px-4 file:py-1.5 file:text-sm file:font-medium file:text-brand hover:border-white/20 hover:file:bg-brand/30"
+                name="proof"
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                required
+                disabled={pending}
+              />
+            </label>
+          </>
+        )}
       </div>
 
       {error && (
@@ -830,7 +867,13 @@ export function PublicTicketeraClient({
         className="btn-cta-primary w-full justify-center"
         disabled={pending}
       >
-        {pending ? "Enviando…" : "Confirmar compra"}
+        {pending
+          ? mpCheckoutEnabled
+            ? "Redirigiendo…"
+            : "Enviando…"
+          : mpCheckoutEnabled
+            ? "Pagar con Mercado Pago"
+            : "Confirmar compra"}
       </button>
 
       <p className="pb-4 text-center text-xs text-white/30">
