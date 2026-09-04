@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
+import { datetimeLocalToIso } from "@/lib/format-datetime";
 import { createSupabaseServiceRoleClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { EVENT_COVER_MAX_BYTES } from "@/lib/upload-limits";
@@ -138,11 +139,7 @@ export async function uploadEventCoverImage(formData: FormData): Promise<UploadE
 }
 
 function parseOptionalDate(value: string): string | null {
-  const v = value.trim();
-  if (!v) return null;
-  const d = new Date(v);
-  if (Number.isNaN(d.getTime())) return null;
-  return d.toISOString();
+  return datetimeLocalToIso(value);
 }
 
 export async function bootstrapOrganization(formData: FormData): Promise<ActionResult> {
@@ -294,9 +291,8 @@ export async function createEvent(formData: FormData): Promise<CreateEventResult
   const startsAtRaw = String(formData.get("starts_at") || "").trim();
   let starts_at: string | null = null;
   if (startsAtRaw) {
-    const d = new Date(startsAtRaw);
-    if (Number.isNaN(d.getTime())) return errCreate("Fecha y hora del evento inválida.");
-    starts_at = d.toISOString();
+    starts_at = datetimeLocalToIso(startsAtRaw);
+    if (!starts_at) return errCreate("Fecha y hora del evento inválida.");
   }
 
   if (!eventName) return errCreate("Nombre del evento obligatorio.");
@@ -370,9 +366,8 @@ export async function updateEventDetails(formData: FormData): Promise<ActionResu
   const startsAtRaw = String(formData.get("starts_at") || "").trim();
   let starts_at: string | null = null;
   if (startsAtRaw) {
-    const d = new Date(startsAtRaw);
-    if (Number.isNaN(d.getTime())) return err("Fecha y hora del evento inválida.");
-    starts_at = d.toISOString();
+    starts_at = datetimeLocalToIso(startsAtRaw);
+    if (!starts_at) return err("Fecha y hora del evento inválida.");
   }
 
   const { error: upErr } = await supabase

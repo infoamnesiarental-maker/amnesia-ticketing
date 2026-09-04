@@ -4,6 +4,7 @@ import { BrowserMultiFormatReader } from "@zxing/browser";
 import { BarcodeFormat, DecodeHintType } from "@zxing/library";
 import { useEffect, useMemo, useRef, useState } from "react";
 
+import { EVENT_TZ } from "@/lib/format-datetime";
 import { checkInByUidManualAction, checkInTicketAction, searchDoorTicketsAction } from "./actions";
 
 interface DoorEvent {
@@ -38,7 +39,7 @@ function formatDate(iso: string | null): string {
   if (!iso) return "Sin fecha";
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return iso;
-  return d.toLocaleString("es-AR", { dateStyle: "medium", timeStyle: "short" });
+  return d.toLocaleString("es-AR", { dateStyle: "medium", timeStyle: "short", timeZone: EVENT_TZ });
 }
 
 function colorByCode(code: string): string {

@@ -2,6 +2,7 @@ import QRCode from "qrcode";
 import { Resend } from "resend";
 
 import { createSupabaseServiceRoleClient } from "@/lib/supabase/admin";
+import { EVENT_TZ } from "@/lib/format-datetime";
 
 const money = new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 2 });
 
@@ -45,7 +46,7 @@ function formatLongDate(iso: string | null): string {
   if (!iso) return "";
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return "";
-  return d.toLocaleString("es-AR", { dateStyle: "full", timeStyle: "short" });
+  return d.toLocaleString("es-AR", { dateStyle: "full", timeStyle: "short", timeZone: EVENT_TZ });
 }
 
 interface RenderArgs {

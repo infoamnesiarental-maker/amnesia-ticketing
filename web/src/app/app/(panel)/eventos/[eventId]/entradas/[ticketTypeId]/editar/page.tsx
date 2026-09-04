@@ -1,19 +1,8 @@
 import { notFound, redirect } from "next/navigation";
 
 import { TicketTypeForm, type TicketTypeFormInitial } from "@/components/TicketTypeForm";
+import { isoToDatetimeLocal } from "@/lib/format-datetime";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-
-function toDatetimeLocalInput(iso: string | null): string {
-  if (!iso) return "";
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return "";
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  const h = String(d.getHours()).padStart(2, "0");
-  const min = String(d.getMinutes()).padStart(2, "0");
-  return `${y}-${m}-${day}T${h}:${min}`;
-}
 
 export default async function EditarEntradaPage({
   params,
@@ -57,7 +46,7 @@ export default async function EditarEntradaPage({
     description: r.description,
     price_ars: Number(r.price_ars),
     stock_total: Number(r.stock_total),
-    sales_ends_at_input: toDatetimeLocalInput(r.sales_ends_at),
+    sales_ends_at_input: isoToDatetimeLocal(r.sales_ends_at),
     is_active: r.is_active,
   };
 

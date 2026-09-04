@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 
+import { isoToDatetimeLocal } from "@/lib/format-datetime";
 import { updateEventDetails } from "@/app/app/actions";
 
 import { EventCoverUploadField } from "./EventCoverUploadField";
@@ -18,14 +19,6 @@ export interface EventEditInitial {
   catalog_flair: string | null;
   starts_at: string | null;
   promo_whatsapp: string | null;
-}
-
-function isoToDatetimeLocal(iso: string | null): string {
-  if (!iso) return "";
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return "";
-  const pad = (n: number) => String(n).padStart(2, "0");
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
 function StepIndicator({ step }: { step: 1 | 2 }) {

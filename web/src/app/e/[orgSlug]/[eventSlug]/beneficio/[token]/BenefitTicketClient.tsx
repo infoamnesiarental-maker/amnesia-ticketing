@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState, useTransition } from "react";
 
 import { submitBenefitCampaignOrder } from "@/app/e/actions";
+import { EVENT_TZ } from "@/lib/format-datetime";
 import { PUBLIC_PROOF_MAX_BYTES } from "@/lib/upload-limits";
 
 const money = new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 2 });
@@ -28,7 +29,7 @@ function fmtDate(iso: string | null): string {
   if (!iso) return "";
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return "";
-  return d.toLocaleString("es-AR", { dateStyle: "full", timeStyle: "short" });
+  return d.toLocaleString("es-AR", { dateStyle: "full", timeStyle: "short", timeZone: EVENT_TZ });
 }
 
 export function BenefitTicketClient({ data }: { data: BenefitCheckoutData }) {
