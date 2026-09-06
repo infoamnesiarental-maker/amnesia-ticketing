@@ -8,6 +8,7 @@ import {
   MP_CHECKOUT_TTL_MS,
   sha256Text,
 } from "@/lib/mercadopago";
+import { applyMpInstantFee, MP_INSTANT_FEE_LABEL } from "@/lib/mp-fee";
 import { getMpCheckoutEnabled } from "@/lib/platform-settings";
 import { createSupabaseServiceRoleClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -292,6 +293,7 @@ export async function submitPublicOrder(formData: FormData): Promise<PublicOrder
       // best-effort
     }
 
+    const { feeArs, chargeArs } = applyMpInstantFee(totalArs);
     const orderId = crypto.randomUUID();
     const expiresAt = new Date(Date.now() + MP_CHECKOUT_TTL_MS);
 
@@ -304,7 +306,7 @@ export async function submitPublicOrder(formData: FormData): Promise<PublicOrder
       buyer_phone: buyer.phone ?? "",
       buyer_email: email,
       total_qty: totalQty,
-      total_ars: totalArs,
+      total_ars: chargeArs,
       proof_object_path: "mp_checkout",
       proof_sha256: sha256Text(`mp_checkout:${orderId}`),
       status: "awaiting_payment",
@@ -359,19 +361,30 @@ export async function submitPublicOrder(formData: FormData): Promise<PublicOrder
     }
 
     const titleById = new Map(ctx.ticket_types.map((t) => [t.id, t]));
+    const preferenceItems = items.map((i) => {
+      const tt = titleById.get(i.ticket_type_id);
+      return {
+        id: i.ticket_type_id,
+        title: tt?.name ?? "Entrada",
+        description: tt?.description ?? undefined,
+        quantity: i.qty,
+        unit_price: i.unit_price_ars,
+      };
+    });
+    if (feeArs > 0) {
+      preferenceItems.push({
+        id: "mp-instant-fee",
+        title: MP_INSTANT_FEE_LABEL,
+        description: "Cargo por cobro instantáneo",
+        quantity: 1,
+        unit_price: feeArs,
+      });
+    }
+
     return attachMpCheckoutRedirect({
       admin,
       orderId,
-      items: items.map((i) => {
-        const tt = titleById.get(i.ticket_type_id);
-        return {
-          id: i.ticket_type_id,
-          title: tt?.name ?? "Entrada",
-          description: tt?.description ?? undefined,
-          quantity: i.qty,
-          unit_price: i.unit_price_ars,
-        };
-      }),
+      items: preferenceItems,
       buyer: { firstName: first, lastName: last, email, dni },
     });
   }
@@ -564,6 +577,7 @@ export async function submitBenefitCampaignOrder(formData: FormData): Promise<Pu
       // best-effort
     }
 
+    const { feeArs, chargeArs } = applyMpInstantFee(unitPrice);
     const orderId = crypto.randomUUID();
     const expiresAt = new Date(Date.now() + MP_CHECKOUT_TTL_MS);
 
@@ -576,7 +590,7 @@ export async function submitBenefitCampaignOrder(formData: FormData): Promise<Pu
       buyer_phone: buyer.phone ?? "",
       buyer_email: email,
       total_qty: 1,
-      total_ars: unitPrice,
+      total_ars: chargeArs,
       proof_object_path: "mp_checkout",
       proof_sha256: sha256Text(`mp_checkout:${orderId}`),
       status: "awaiting_payment",
@@ -642,18 +656,29 @@ export async function submitBenefitCampaignOrder(formData: FormData): Promise<Pu
       return err("Este código de beneficio ya fue utilizado por otra persona.");
     }
 
+    const preferenceItems = [
+      {
+        id: ticketType.id,
+        title: ticketType.name,
+        description: ticketType.description ?? undefined,
+        quantity: 1,
+        unit_price: unitPrice,
+      },
+    ];
+    if (feeArs > 0) {
+      preferenceItems.push({
+        id: "mp-instant-fee",
+        title: MP_INSTANT_FEE_LABEL,
+        description: "Cargo por cobro instantáneo",
+        quantity: 1,
+        unit_price: feeArs,
+      });
+    }
+
     return attachMpCheckoutRedirect({
       admin,
       orderId,
-      items: [
-        {
-          id: ticketType.id,
-          title: ticketType.name,
-          description: ticketType.description ?? undefined,
-          quantity: 1,
-          unit_price: unitPrice,
-        },
-      ],
+      items: preferenceItems,
       buyer: {
         firstName: buyer.first_name,
         lastName: buyer.last_name,

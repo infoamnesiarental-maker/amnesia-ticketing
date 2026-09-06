@@ -5,6 +5,7 @@ import { useState, useTransition } from "react";
 
 import { submitBenefitCampaignOrder } from "@/app/e/actions";
 import { formatEventStartsAt } from "@/lib/format-datetime";
+import { applyMpInstantFee, MP_INSTANT_FEE_LABEL } from "@/lib/mp-fee";
 import { PUBLIC_PROOF_MAX_BYTES } from "@/lib/upload-limits";
 
 const money = new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 2 });
@@ -40,6 +41,8 @@ export function BenefitTicketClient({ data }: { data: BenefitCheckoutData }) {
   const [pending, startTransition] = useTransition();
 
   const startsAt = fmtDate(data.eventStartsAt);
+  const mpFee = data.mpCheckoutEnabled ? applyMpInstantFee(data.discountedPriceArs) : null;
+  const payAmount = mpFee?.chargeArs ?? data.discountedPriceArs;
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -111,6 +114,23 @@ export function BenefitTicketClient({ data }: { data: BenefitCheckoutData }) {
             <span className="mr-2 text-white/45 line-through">{money.format(data.basePriceArs)}</span>
             <span className="text-lg font-bold text-brand">{money.format(data.discountedPriceArs)}</span>
           </p>
+          {mpFee && mpFee.feeArs > 0 ? (
+            <div className="mt-2 space-y-1 border-t border-white/10 pt-2 text-sm">
+              <div className="flex justify-between gap-3">
+                <span className="text-white/55">Subtotal</span>
+                <span className="tabular-nums text-white/80">{money.format(mpFee.baseArs)}</span>
+              </div>
+              <div className="flex justify-between gap-3">
+                <span className="text-white/55">{MP_INSTANT_FEE_LABEL}</span>
+                <span className="tabular-nums text-white/80">{money.format(mpFee.feeArs)}</span>
+              </div>
+              <div className="flex justify-between gap-3 font-semibold text-white">
+                <span>Total a pagar</span>
+                <span className="tabular-nums text-brand">{money.format(mpFee.chargeArs)}</span>
+              </div>
+              <p className="text-xs text-white/45">Incluye 8% por cobro instantáneo de Mercado Pago.</p>
+            </div>
+          ) : null}
           {data.campaignNote ? <p className="text-xs text-white/60">Nota: {data.campaignNote}</p> : null}
         </div>
       </div>
@@ -167,7 +187,7 @@ export function BenefitTicketClient({ data }: { data: BenefitCheckoutData }) {
               <h2 className="text-lg font-semibold text-white">3. Pago con Mercado Pago</h2>
               <p className="text-sm text-white/75">
                 Vas a pagar{" "}
-                <span className="font-semibold text-brand">{money.format(data.discountedPriceArs)}</span> en
+                <span className="font-semibold text-brand">{money.format(payAmount)}</span> en
                 Mercado Pago. No hace falta subir comprobante.
               </p>
             </>
@@ -208,7 +228,7 @@ export function BenefitTicketClient({ data }: { data: BenefitCheckoutData }) {
               ? "Redirigiendo..."
               : "Enviando..."
             : data.mpCheckoutEnabled
-              ? `Pagar ${money.format(data.discountedPriceArs)} con Mercado Pago`
+              ? `Pagar ${money.format(payAmount)} con Mercado Pago`
               : `Comprar 1 entrada por ${money.format(data.discountedPriceArs)}`}
         </button>
 

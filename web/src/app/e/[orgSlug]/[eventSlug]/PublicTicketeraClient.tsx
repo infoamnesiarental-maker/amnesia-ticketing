@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState, useTransition } from "react";
 
 import { submitPublicOrder } from "@/app/e/actions";
+import { applyMpInstantFee, MP_INSTANT_FEE_LABEL } from "@/lib/mp-fee";
 import type { TicketeraContext, TicketeraTicketType } from "@/lib/ticketera";
 import { PUBLIC_PROOF_MAX_BYTES } from "@/lib/upload-limits";
 
@@ -309,8 +310,15 @@ export function PublicTicketeraClient({
         ars += roundMoney(unit * q);
       }
     }
-    return { qty, ars: roundMoney(ars) };
-  }, [ticket_types, qtyById]);
+    const baseArs = roundMoney(ars);
+    const mp = mpCheckoutEnabled ? applyMpInstantFee(baseArs) : null;
+    return {
+      qty,
+      ars: baseArs,
+      feeArs: mp?.feeArs ?? 0,
+      chargeArs: mp?.chargeArs ?? baseArs,
+    };
+  }, [ticket_types, qtyById, mpCheckoutEnabled]);
 
   useEffect(() => {
     const target = Math.max(1, totals.qty);
@@ -748,10 +756,30 @@ export function PublicTicketeraClient({
                 </div>
               );
             })}
-          <div className="flex items-center justify-between border-t border-white/10 pt-2">
-            <span className="text-sm font-semibold text-white">Total</span>
-            <span className="text-xl font-bold tabular-nums text-white">{money.format(totals.ars)}</span>
-          </div>
+          {mpCheckoutEnabled && totals.feeArs > 0 ? (
+            <>
+              <div className="flex items-center justify-between border-t border-white/10 pt-2 text-sm">
+                <span className="text-white/55">Subtotal</span>
+                <span className="tabular-nums text-white/80">{money.format(totals.ars)}</span>
+              </div>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-white/55">{MP_INSTANT_FEE_LABEL}</span>
+                <span className="tabular-nums text-white/80">{money.format(totals.feeArs)}</span>
+              </div>
+              <div className="flex items-center justify-between border-t border-white/10 pt-2">
+                <span className="text-sm font-semibold text-white">Total a pagar</span>
+                <span className="text-xl font-bold tabular-nums text-white">{money.format(totals.chargeArs)}</span>
+              </div>
+              <p className="text-xs text-white/45">
+                Incluye 8% por cobro instantáneo de Mercado Pago.
+              </p>
+            </>
+          ) : (
+            <div className="flex items-center justify-between border-t border-white/10 pt-2">
+              <span className="text-sm font-semibold text-white">Total</span>
+              <span className="text-xl font-bold tabular-nums text-white">{money.format(totals.ars)}</span>
+            </div>
+          )}
         </div>
       </div>
 
@@ -763,7 +791,7 @@ export function PublicTicketeraClient({
               <h2 className="text-base font-semibold text-white">3. Pago con Mercado Pago</h2>
               <p className="mt-1 text-sm text-white/60">
                 Vas a pagar{" "}
-                <span className="font-bold text-white">{money.format(totals.ars)}</span> en el entorno
+                <span className="font-bold text-white">{money.format(totals.chargeArs)}</span> en el entorno
                 seguro de Mercado Pago. Al confirmar, volvés acá con tus entradas.
               </p>
             </div>
