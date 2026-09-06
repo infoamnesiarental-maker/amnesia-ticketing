@@ -14,7 +14,11 @@ export const metadata: Metadata = {
   title: "Amnesia Ticketing",
   description: "Ticketera sin pasarela: transferencia + comprobante + validación MP + QR.",
   icons: {
-    icon: [{ url: "/logoAmnesia.png", type: "image/png" }],
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/logoAmnesia.png", type: "image/png" },
+    ],
+    shortcut: "/favicon.ico",
     apple: [{ url: "/logoAmnesia.png", type: "image/png" }],
   },
 };
