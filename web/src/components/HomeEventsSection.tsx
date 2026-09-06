@@ -1,20 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { getEventScheduleParts } from "@/lib/format-datetime";
 import type { PublicEventListItem } from "@/lib/public-events-catalog";
 
-const TZ = "America/Argentina/Buenos_Aires";
-
 function getScheduleParts(iso: string | null) {
-  if (!iso) return null;
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return null;
-  const weekday = new Intl.DateTimeFormat("es-AR", { weekday: "long", timeZone: TZ }).format(d);
-  const day = new Intl.DateTimeFormat("es-AR", { day: "numeric", timeZone: TZ }).format(d);
-  const month = new Intl.DateTimeFormat("es-AR", { month: "short", timeZone: TZ }).format(d);
-  const year = new Intl.DateTimeFormat("es-AR", { year: "numeric", timeZone: TZ }).format(d);
-  const time = new Intl.DateTimeFormat("es-AR", { hour: "2-digit", minute: "2-digit", timeZone: TZ }).format(d);
-  return { weekday, day, month, year, time };
+  return getEventScheduleParts(iso);
 }
 
 function ticketeraHref(item: PublicEventListItem): string {

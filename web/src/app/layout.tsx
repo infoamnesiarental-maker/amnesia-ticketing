@@ -13,6 +13,10 @@ const poppins = Poppins({
 export const metadata: Metadata = {
   title: "Amnesia Ticketing",
   description: "Ticketera sin pasarela: transferencia + comprobante + validación MP + QR.",
+  icons: {
+    icon: [{ url: "/logoAmnesia.png", type: "image/png" }],
+    apple: [{ url: "/logoAmnesia.png", type: "image/png" }],
+  },
 };
 
 export default function RootLayout({

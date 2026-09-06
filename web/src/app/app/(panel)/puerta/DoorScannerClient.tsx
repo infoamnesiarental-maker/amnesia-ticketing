@@ -4,7 +4,7 @@ import { BrowserMultiFormatReader } from "@zxing/browser";
 import { BarcodeFormat, DecodeHintType } from "@zxing/library";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import { EVENT_TZ } from "@/lib/format-datetime";
+import { EVENT_TZ, formatEventStartsAt } from "@/lib/format-datetime";
 import { checkInByUidManualAction, checkInTicketAction, searchDoorTicketsAction } from "./actions";
 
 interface DoorEvent {
@@ -35,11 +35,15 @@ interface ManualFoundItem {
   issuedAt: string;
 }
 
-function formatDate(iso: string | null): string {
+function formatSystemDate(iso: string | null): string {
   if (!iso) return "Sin fecha";
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return iso;
   return d.toLocaleString("es-AR", { dateStyle: "medium", timeStyle: "short", timeZone: EVENT_TZ });
+}
+
+function formatEventDate(iso: string | null): string {
+  return formatEventStartsAt(iso) || "Sin fecha";
 }
 
 function colorByCode(code: string): string {
@@ -350,7 +354,7 @@ export function DoorScannerClient({ events }: { events: DoorEvent[] }) {
         </label>
         {selectedEvent ? (
           <p className="mt-2 text-xs text-white/55">
-            {formatDate(selectedEvent.starts_at)}
+            {formatEventDate(selectedEvent.starts_at)}
             {selectedEvent.place ? ` · ${selectedEvent.place}` : ""}
           </p>
         ) : null}
@@ -502,7 +506,7 @@ export function DoorScannerClient({ events }: { events: DoorEvent[] }) {
             {result.ticketUid ? ` · UID: ${result.ticketUid}` : ""}
           </p>
           {result.checkedInAt ? (
-            <p className="mt-1 text-xs opacity-80">Hora: {formatDate(result.checkedInAt)}</p>
+            <p className="mt-1 text-xs opacity-80">Hora: {formatSystemDate(result.checkedInAt ?? null)}</p>
           ) : null}
         </div>
       ) : null}

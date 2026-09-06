@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { EVENT_TZ } from "@/lib/format-datetime";
+import { formatEventStartsAt } from "@/lib/format-datetime";
 import { generateTicketQrSvg } from "@/lib/qr";
 import { syncOrderFromMercadoPago } from "@/lib/mp-checkout-fulfill";
 import { createSupabaseServiceRoleClient } from "@/lib/supabase/admin";
@@ -89,10 +89,7 @@ function statusInfo(status: string) {
 }
 
 function formatDate(iso: string | null) {
-  if (!iso) return "";
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return iso;
-  return d.toLocaleString("es-AR", { dateStyle: "medium", timeStyle: "short", timeZone: EVENT_TZ });
+  return formatEventStartsAt(iso);
 }
 
 export default async function BuyerOrderPage({ params }: PageProps) {
