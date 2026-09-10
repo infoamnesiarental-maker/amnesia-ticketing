@@ -484,23 +484,9 @@ export function PublicTicketeraClient({
           <PromoBanner whatsapp={event.promo_whatsapp} eventName={event.name} />
         )}
 
-        {/* Tickets */}
-        <div className="surface-glass px-4 py-5 sm:px-6">
-          <p className="mb-4 text-[11px] font-bold uppercase tracking-widest text-white/45">Tickets</p>
-          {ticket_types.map((tt) => (
-            <QtyRow
-              key={tt.id}
-              tt={tt}
-              qty={Math.min(Math.max(0, Math.floor(qtyById[tt.id] ?? 0)), tt.available_qty)}
-              disabled={false}
-              onChange={(q) => setQtyById((prev) => ({ ...prev, [tt.id]: q }))}
-            />
-          ))}
-        </div>
-
         {/* Sobre el evento */}
         {(event.place || eventStartsAtLabel) && (
-          <div className="surface-glass mt-3 px-4 py-5 sm:px-6">
+          <div className="surface-glass mb-3 px-4 py-5 sm:px-6">
             <p className="mb-3 text-[11px] font-bold uppercase tracking-widest text-white/45">
               Sobre el evento
             </p>
@@ -569,6 +555,20 @@ export function PublicTicketeraClient({
             </div>
           </div>
         )}
+
+        {/* Tickets */}
+        <div className="surface-glass px-4 py-5 sm:px-6">
+          <p className="mb-4 text-[11px] font-bold uppercase tracking-widest text-white/45">Tickets</p>
+          {ticket_types.map((tt) => (
+            <QtyRow
+              key={tt.id}
+              tt={tt}
+              qty={Math.min(Math.max(0, Math.floor(qtyById[tt.id] ?? 0)), tt.available_qty)}
+              disabled={false}
+              onChange={(q) => setQtyById((prev) => ({ ...prev, [tt.id]: q }))}
+            />
+          ))}
+        </div>
 
         {/* Espacio para que la sticky bar no tape el contenido */}
         {totals.qty > 0 && <div className="h-28" />}
